@@ -14,6 +14,7 @@ class Mark extends Model
         'toan',
         'van',
         'ngoai_ngu',
+        'khtn',
         'ly',
         'hoa',
         'sinh',

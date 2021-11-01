@@ -19,9 +19,10 @@ class CreateMarksTable extends Migration
             $table->string('sbd')->unique();
             $table->integer('ma_cum');
             $table->foreign('ma_cum')->references('ma_cum')->on('places')->onDelete('cascade');
-            $table->float('toan', 4, 2)->nullable();
-            $table->float('van', 4, 2)->nullable();
-            $table->float('ngoai_ngu', 4, 2)->nullable();
+            $table->float('toan', 4, 2);
+            $table->float('van', 4, 2);
+            $table->float('ngoai_ngu', 4, 2);
+            $table->boolean('khtn');
             $table->float('ly', 4, 2)->nullable();
             $table->float('hoa', 4, 2)->nullable();
             $table->float('sinh', 4, 2)->nullable();

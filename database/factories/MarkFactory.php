@@ -39,19 +39,20 @@ class MarkFactory extends Factory
         $value = substr(strval(hexdec(uniqid())), -6);
         $sbd = $prefix . $value;
         $sbd = str_pad($sbd, 8, '0', STR_PAD_LEFT);
-        $call = rand(0, 1) == 1;
+        $khtn = rand(0, 1) == 1;
         return [
             'sbd'       => $sbd,
             'ma_cum'    => $prefix,
             'toan'      => static::randomMark(true),
             'van'       => static::randomMark2(true),
             'ngoai_ngu' => static::randomMark(true),
-            'ly'        => static::randomMark2($call),
-            'hoa'       => static::randomMark2($call),
-            'sinh'      => static::randomMark2($call),
-            'su'        => static::randomMark2(!$call),
-            'dia'       => static::randomMark2(!$call),
-            'gdcd'      => static::randomMark2(!$call),
+            'khtn'      => $khtn,
+            'ly'        => static::randomMark2($khtn),
+            'hoa'       => static::randomMark2($khtn),
+            'sinh'      => static::randomMark2($khtn),
+            'su'        => static::randomMark2(!$khtn),
+            'dia'       => static::randomMark2(!$khtn),
+            'gdcd'      => static::randomMark2(!$khtn),
         ];
     }
 }

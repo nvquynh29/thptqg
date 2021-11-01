@@ -19,3 +19,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 Route::get('/mark/{sbd}', [MarkController::class, 'show']);
+Route::get('/phase-subject', [MarkController::class, 'phaseBySubject']);
+Route::get('/phase-group', [MarkController::class, 'phaseByGroup']);
