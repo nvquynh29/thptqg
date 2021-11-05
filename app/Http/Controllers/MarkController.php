@@ -46,22 +46,51 @@ class MarkController extends Controller
         return response('Not found', 404);
     }
 
-    public function phaseBySubject(Request $request)
+    public static function phaseByASubject($subject)
     {
         $mark = 0;
-        $result = [];
-        $request->validate([
-            'subject' => 'required|string',
-        ]);
-        $delta = static::getDeltaBySubject($request->subject);
+        $markArray = [];
+        $countArray = [];
+
+        $delta = static::getDeltaBySubject($subject);
         if ($delta) {
             while ($mark <= 10) {
-                $count = Mark::where($request->subject, $mark)->count();
-                $result[strval($mark)] = $count;
+                $count = Mark::where($subject, $mark)->count();
+                $markArray[] = round($mark, 2);
+                $countArray[] = $count;
                 $mark += $delta;
             }
         }
-        return response()->json($result);
+        return [$markArray, $countArray];
+
+    }
+
+    public function phaseBySubject(Request $request)
+    {
+        $request->validate([
+            'subject' => 'required|string',
+        ]);
+        $response = static::phaseByASubject($request->subject);
+        return response()->json($response);
+    }
+
+    public function phaseAllSubject()
+    {
+        $subjects = ['toan',
+            'van',
+            'ngoai_ngu',
+            'ly',
+            'hoa',
+            'sinh',
+            'su',
+            'dia',
+            'gdcd'];
+        $data = [];
+        for ($i = 0; $i < count($subjects); $i++) {
+            ($data[$subjects[$i]] = static::phaseByASubject($subjects[$i]));
+        }
+        return response()->json($data);
+
     }
 
     public function phaseByGroup(Request $request)
