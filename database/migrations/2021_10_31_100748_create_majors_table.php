@@ -15,11 +15,9 @@ class CreateMajorsTable extends Migration
     {
         Schema::create('majors', function (Blueprint $table) {
             $table->id();
-            $table->string('major_code', 30)->unique();
-            $table->string('uni_code', 30)->unique();
-            $table->string('major_name', 255)->unique();
-            $table->string('group', 3);
-            $table->float('last_year_standard', 4, 2);
+            $table->string('major_code', 30);
+            $table->string('uni_code', 30);
+            $table->string('major_name', 255);
             $table->foreign('uni_code')->references('uni_code')->on('universities')->onDelete('cascade');
         });
     }
