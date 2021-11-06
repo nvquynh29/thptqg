@@ -9,8 +9,8 @@ class Place extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'ma_cum',
-        'ten_cum'
+        'place_id',
+        'place_name'
     ];
     protected $guarded = [];
 }

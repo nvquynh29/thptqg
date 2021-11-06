@@ -15,14 +15,12 @@ class CreateMajorsTable extends Migration
     {
         Schema::create('majors', function (Blueprint $table) {
             $table->id();
-            $table->string('ma_nganh', 30)->unique();
-            $table->string('ma_truong', 30)->unique();
-            $table->string('ten_nganh', 255)->unique();
-            $table->string('nhom_nganh', 100);
-            $table->string('to_hop', 10);
-            $table->float('diem_chuan_nam_truoc', 4, 2);
-            $table->foreign('ma_truong')->references('ma_truong')->on('universities')->onDelete('cascade');
-            $table->timestamps();
+            $table->string('major_code', 30)->unique();
+            $table->string('uni_code', 30)->unique();
+            $table->string('major_name', 255)->unique();
+            $table->string('group', 3);
+            $table->float('last_year_standard', 4, 2);
+            $table->foreign('uni_code')->references('uni_code')->on('universities')->onDelete('cascade');
         });
     }
 

@@ -17,8 +17,8 @@ class CreateMarksTable extends Migration
         Schema::create('marks', function (Blueprint $table) {
             $table->id();
             $table->string('sbd')->unique();
-            $table->integer('ma_cum');
-            $table->foreign('ma_cum')->references('ma_cum')->on('places')->onDelete('cascade');
+            $table->integer('place_id');
+            $table->foreign('place_id')->references('place_id')->on('places')->onDelete('cascade');
             $table->float('toan', 4, 2);
             $table->float('van', 4, 2);
             $table->float('ngoai_ngu', 4, 2);

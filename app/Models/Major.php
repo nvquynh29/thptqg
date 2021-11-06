@@ -9,13 +9,11 @@ class Major extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'ma_nganh',
-        'ma_truong',
-        'ten_nganh',
-        'nhom_nganh',
-        'to_hop',
-        'diem_chuan_nam_truoc',
-        
+        'major_code',
+        'uni_code',
+        'major_name',
+        'group',
+        'last_year_standard',
     ];
     protected $guarded = [];
 }

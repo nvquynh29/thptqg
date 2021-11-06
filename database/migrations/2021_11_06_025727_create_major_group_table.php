@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePlacesTable extends Migration
+class CreateMajorGroupTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,10 @@ class CreatePlacesTable extends Migration
      */
     public function up()
     {
-        Schema::create('places', function (Blueprint $table) {
+        Schema::create('major_group', function (Blueprint $table) {
             $table->id();
-            $table->integer('place_id')->unique();
-            $table->string('place_name', 255)->unique();
+            $table->string('major_code');
+            $table->string('group');
         });
     }
 
@@ -27,6 +27,6 @@ class CreatePlacesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('places');
+        Schema::dropIfExists('major_group');
     }
 }
