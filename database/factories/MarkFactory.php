@@ -35,14 +35,14 @@ class MarkFactory extends Factory
     }
     public function definition()
     {
-        $prefix = Place::pluck('ma_cum')->random();
+        $prefix = Place::pluck('place_id')->random();
         $value = substr(strval(hexdec(uniqid())), -6);
         $sbd = $prefix . $value;
         $sbd = str_pad($sbd, 8, '0', STR_PAD_LEFT);
         $khtn = rand(0, 1) == 1;
         return [
             'sbd'       => $sbd,
-            'ma_cum'    => $prefix,
+            'place_id'  => $prefix,
             'toan'      => static::randomMark(true),
             'van'       => static::randomMark2(true),
             'ngoai_ngu' => static::randomMark(true),

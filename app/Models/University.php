@@ -9,9 +9,9 @@ class University extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'ma_truong',
-        'ten_truong',
-        'dia_chi'
+        'uni_code',
+        'uni_name',
+        'address'
     ];
     protected $guarded = [];
 }

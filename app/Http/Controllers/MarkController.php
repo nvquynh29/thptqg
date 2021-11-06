@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 class MarkController extends Controller
 {
-    private static function getDeltaBySubject($subject)
+    private function getDeltaBySubject($subject)
     {
         $subject1 = array(1 => 'toan', 2 => 'ngoai_ngu');
         $subject2 = array(1 => 'van', 2 => 'ly', 3 => 'hoa', 4 => 'sinh', 5 => 'su', 6 => 'dia', 7 => 'gdcd');
@@ -19,7 +19,7 @@ class MarkController extends Controller
         }
         return $delta;
     }
-    private static function getSubjectsByGroup($group)
+    private function getSubjectsByGroup($group)
     {
         switch ($group) {
             case 'A':
@@ -46,13 +46,13 @@ class MarkController extends Controller
         return response('Not found', 404);
     }
 
-    public static function phaseByASubject($subject)
+    public function phaseByASubject($subject)
     {
         $mark = 0;
         $markArray = [];
         $countArray = [];
 
-        $delta = static::getDeltaBySubject($subject);
+        $delta = $this->getDeltaBySubject($subject);
         if ($delta) {
             while ($mark <= 10) {
                 $count = Mark::where($subject, $mark)->count();
@@ -70,7 +70,7 @@ class MarkController extends Controller
         $request->validate([
             'subject' => 'required|string',
         ]);
-        $response = static::phaseByASubject($request->subject);
+        $response = $this->phaseByASubject($request->subject);
         return response()->json($response);
     }
 
@@ -87,10 +87,9 @@ class MarkController extends Controller
             'gdcd'];
         $data = [];
         for ($i = 0; $i < count($subjects); $i++) {
-            ($data[$subjects[$i]] = static::phaseByASubject($subjects[$i]));
+            ($data[$subjects[$i]] = $this->phaseByASubject($subjects[$i]));
         }
         return response()->json($data);
-
     }
 
     public function phaseByGroup(Request $request)
@@ -101,7 +100,7 @@ class MarkController extends Controller
             'group' => 'required|string',
         ]);
         $group = $request->group;
-        $subjects = static::getSubjectsByGroup($group);
+        $subjects = $this->getSubjectsByGroup($group);
         $khtn = $group == 'A' || $group == 'A1' || $group == 'B';
         $mark = Mark::select($subjects)->where('khtn', $khtn)->get();
         foreach ($mark as $key => $value) {
@@ -110,4 +109,14 @@ class MarkController extends Controller
         }
         return response($result);
     }
+
+    // public function phaseByPlace(Request $request)
+    // {
+    //     $request->validate([
+    //         'placeId' => 'required|string',
+    //     ]);
+
+    // }
+
+    // public function topTen
 }

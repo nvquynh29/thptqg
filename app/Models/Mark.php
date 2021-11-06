@@ -10,7 +10,7 @@ class Mark extends Model
     use HasFactory;
     protected $fillable = [
         'sbd',
-        'ma_cum',
+        'place_id',
         'toan',
         'van',
         'ngoai_ngu',
