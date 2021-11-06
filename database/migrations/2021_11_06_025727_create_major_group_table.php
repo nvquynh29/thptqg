@@ -15,8 +15,11 @@ class CreateMajorGroupTable extends Migration
     {
         Schema::create('major_group', function (Blueprint $table) {
             $table->id();
-            $table->string('major_code');
-            $table->string('group');
+            $table->unsignedBigInteger('major_id');
+            $table->unsignedBigInteger('group_id');
+            $table->float('standard_point', 4, 2);
+            $table->foreign('major_id')->references('id')->on('majors')->onDelete('cascade');
+            $table->foreign('group_id')->references('id')->on('groups')->onDelete('cascade');
         });
     }
 
