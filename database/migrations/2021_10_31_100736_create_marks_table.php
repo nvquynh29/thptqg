@@ -29,6 +29,7 @@ class CreateMarksTable extends Migration
             $table->float('su', 4, 2)->nullable();
             $table->float('dia', 4, 2)->nullable();
             $table->float('gdcd', 4, 2)->nullable();
+            $table->timestamps();
         });
     }
 
