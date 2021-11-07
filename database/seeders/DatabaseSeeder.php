@@ -15,7 +15,7 @@ class DatabaseSeeder extends Seeder
     private static function randomMark($call)
     {
         if ($call) {
-            $delta = [0.2, 0.4, 0.6, 0.8, 1.0];
+            $delta = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0];
             $mark = rand(0, 9) + $delta[rand(0, 4)];
             return floatval($mark);
         }
@@ -24,7 +24,7 @@ class DatabaseSeeder extends Seeder
     private static function randomMark2($call)
     {
         if ($call) {
-            $delta = [0.25, 0.50, 0.75, 1.00];
+            $delta = [0.00, 0.25, 0.50, 0.75, 1.00];
             $mark = rand(0, 9) + $delta[rand(0, 3)];
             return floatval($mark);
         }

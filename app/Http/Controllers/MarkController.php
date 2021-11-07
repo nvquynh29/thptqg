@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Mark;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class MarkController extends Controller
 {
@@ -13,7 +14,7 @@ class MarkController extends Controller
         $subject2 = array(1 => 'van', 2 => 'ly', 3 => 'hoa', 4 => 'sinh', 5 => 'su', 6 => 'dia', 7 => 'gdcd');
         $delta = null;
         if (array_search($subject, $subject1)) {
-            $delta = 0.2;
+            $delta = 0.20;
         } else if (array_search($subject, $subject2)) {
             $delta = 0.25;
         }
@@ -37,6 +38,23 @@ class MarkController extends Controller
         }
         return null;
     }
+    public function phaseByGroup(Request $request)
+    {
+        // $result[i] => count(x), i - 1 < x <= i
+        $result = array_fill(1, 30, 0);
+        $group = $request->query('group');
+        if (isset($group)) {
+            $subjects = $this->getSubjectsByGroup($group);
+            $khtn = $group == 'A' || $group == 'A1' || $group == 'B';
+            $mark = Mark::select($subjects)->where('khtn', $khtn)->get();
+            foreach ($mark as $value) {
+                $sum = $value->{$subjects[0]}+$value->{$subjects[1]}+$value->{$subjects[2]};
+                $result[intval($sum)]++;
+            }
+            return response($result);
+        }
+        return response('group is required', 400);
+    }
     public function show($sbd)
     {
         $record = Mark::where('sbd', $sbd)->get();
@@ -46,77 +64,66 @@ class MarkController extends Controller
         return response('Not found', 404);
     }
 
-    public function phaseByASubject($subject)
+    public function phase(Request $request)
     {
-        $mark = 0;
+        $placeId = $request->query('place_id');
+        $subject = $request->query('subject');
+        $filter = null;
+        if (isset($placeId) && isset($subject)) {
+            $filter = DB::table('marks');
+            if ($placeId == 'all') {
+                $filter = $filter->whereNotNull($subject)->pluck($subject);
+            } else {
+                $filter = $filter->where('place_id', $placeId)->whereNotNull($subject)->pluck($subject);
+            }
+            return $this->phaseBySubject($filter, $subject);
+        }
+        return response('All input is required', 400);
+    }
+
+    public function phaseBySubject($data, $subject)
+    {
         $markArray = [];
         $countArray = [];
-
         $delta = $this->getDeltaBySubject($subject);
         if ($delta) {
-            while ($mark <= 10) {
-                $count = Mark::where($subject, $mark)->count();
+            for ($mark = 0; $mark <= 10; $mark += $delta) {
                 $markArray[] = round($mark, 2);
-                $countArray[] = $count;
-                $mark += $delta;
+            }
+            $length = 10 / $delta + 1;
+            $countArray = array_fill(0, $length, 0);
+            foreach ($data as $value) {
+                $countArray[intval($value / $delta)]++;
             }
         }
         return [$markArray, $countArray];
-
     }
 
-    public function phaseBySubject(Request $request)
-    {
-        $request->validate([
-            'subject' => 'required|string',
-        ]);
-        $response = $this->phaseByASubject($request->subject);
-        return response()->json($response);
-    }
-
-    public function phaseAllSubject()
-    {
-        $subjects = ['toan',
-            'van',
-            'ngoai_ngu',
-            'ly',
-            'hoa',
-            'sinh',
-            'su',
-            'dia',
-            'gdcd'];
-        $data = [];
-        for ($i = 0; $i < count($subjects); $i++) {
-            ($data[$subjects[$i]] = $this->phaseByASubject($subjects[$i]));
-        }
-        return response()->json($data);
-    }
-
-    public function phaseByGroup(Request $request)
-    {
-        // $result[i] => count(x|conditional), i - 1 < x <= i
-        $result = array_fill(1, 30, 0);
-        $request->validate([
-            'group' => 'required|string',
-        ]);
-        $group = $request->group;
-        $subjects = $this->getSubjectsByGroup($group);
-        $khtn = $group == 'A' || $group == 'A1' || $group == 'B';
-        $mark = Mark::select($subjects)->where('khtn', $khtn)->get();
-        foreach ($mark as $key => $value) {
-            $sum = $value->{$subjects[0]}+$value->{$subjects[1]}+$value->{$subjects[2]};
-            $result[intval($sum)]++;
-        }
-        return response($result);
-    }
-
-    // public function phaseByPlace(Request $request)
+    // public function phaseAllSubject(Request $request)
     // {
-    //     $request->validate([
-    //         'placeId' => 'required|string',
-    //     ]);
-
+    //     $subjects = ['toan', 'van', 'ngoai_ngu', 'ly', 'hoa', 'sinh', 'su', 'dia', 'gdcd'];
+    //     $length = count($subjects);
+    //     $data = [];
+    //     for ($i = 0; $i < $length; $i++) {
+    //         $request->merge(['subject' => $subjects[$i]]);
+    //         $data[$subjects[$i]] = $this->phaseByASubject($request);
+    //     }
+    //     return response()->json($data);
     // }
 
-    // public function topTen
+    public function topTen(Request $request)
+    {
+        $subject = $request->query('subject');
+        $desc = $request->query('desc');
+        $marks = DB::table('marks')
+            ->select('marks.place_id', 'places.place_name', DB::raw("round(AVG($subject),2) as temp"))
+            ->groupBy('marks.place_id', 'places.place_name')
+            ->join('places', 'places.place_id', '=', 'marks.place_id')
+            ->orderBy('temp', $desc)
+            ->take(10)
+            ->get();
+        return response($marks);
+    }
+
+    // suggest major api
 }
