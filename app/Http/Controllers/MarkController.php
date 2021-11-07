@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Mark;
+use App\Models\Place;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -57,8 +58,10 @@ class MarkController extends Controller
     }
     public function show($sbd)
     {
-        $record = Mark::where('sbd', $sbd)->get();
-        if (count($record)) {
+        $record = Mark::where('sbd', $sbd)->first();
+        $place = Place::where('place_id', $record->place_id)->first();
+        $record->place = $place->place_name;
+        if ($record) {
             return response()->json($record);
         }
         return response('Not found', 404);
@@ -99,17 +102,17 @@ class MarkController extends Controller
         return [$markArray, $countArray];
     }
 
-    // public function phaseAllSubject(Request $request)
-    // {
-    //     $subjects = ['toan', 'van', 'ngoai_ngu', 'ly', 'hoa', 'sinh', 'su', 'dia', 'gdcd'];
-    //     $length = count($subjects);
-    //     $data = [];
-    //     for ($i = 0; $i < $length; $i++) {
-    //         $request->merge(['subject' => $subjects[$i]]);
-    //         $data[$subjects[$i]] = $this->phaseByASubject($request);
-    //     }
-    //     return response()->json($data);
-    // }
+    public function phaseAllSubject(Request $request)
+    {
+        $subjects = ['toan', 'van', 'ngoai_ngu', 'ly', 'hoa', 'sinh', 'su', 'dia', 'gdcd'];
+        $length = count($subjects);
+        $data = [];
+        for ($i = 0; $i < $length; $i++) {
+            $request->merge(['subject' => $subjects[$i]]);
+            $data[$subjects[$i]] = $this->phase($request);
+        }
+        return response()->json($data);
+    }
 
     public function topTen(Request $request)
     {
