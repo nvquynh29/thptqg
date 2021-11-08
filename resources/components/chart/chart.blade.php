@@ -1,4 +1,4 @@
-@extends('home.index')
+@extends('pages.home.index')
 @section('chart')
   <style></style>
 <body>
@@ -17,8 +17,8 @@
   let marks = []
   $.ajax({
       type: "GET",
-      url: `api/phase-subject`,
-      data: {"subject": "toan"},
+      url: `api/phase`,
+      data: {"subject": "toan","place_id":"all"},
       contentType: "application/json; charset=utf-8",
       dataType: "json",
       success: (result)=>{

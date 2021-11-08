@@ -4,12 +4,8 @@ namespace App\View\Components;
 
 use Illuminate\View\Component;
 
-class Chart extends Component
+class SubjectFilter extends Component
 {
-    public $title;
-    public $data;
-    public $query;
-    
     /**
      * Create a new component instance.
      *
@@ -27,6 +23,6 @@ class Chart extends Component
      */
     public function render()
     {
-        return view('components.chart');
+        return view('components.subject-filter');
     }
 }

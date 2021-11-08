@@ -20,3 +20,11 @@ Route::get('/phase-all-subject', [MarkController::class, 'phaseAllSubject']);
 Route::get('/phase-group', [MarkController::class, 'phaseByGroup']);
 Route::get('/phase', [MarkController::class, 'phase']);
 Route::get('/top-ten', [MarkController::class, 'topTen']);
+
+
+
+
+
+
+
+
