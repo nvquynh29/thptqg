@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\MarkController;
+use App\Http\Controllers\PlaceController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -20,11 +21,4 @@ Route::get('/phase-all-subject', [MarkController::class, 'phaseAllSubject']);
 Route::get('/phase-group', [MarkController::class, 'phaseByGroup']);
 Route::get('/phase', [MarkController::class, 'phase']);
 Route::get('/top-ten', [MarkController::class, 'topTen']);
-
-
-
-
-
-
-
-
+Route::get('/places', [PlaceController::class, 'index']);

@@ -4,11 +4,8 @@ namespace App\View\Components;
 
 use Illuminate\View\Component;
 
-class Chart extends Component
+class Tab1 extends Component
 {
-    public $title;
-    public $data;
-
     /**
      * Create a new component instance.
      *
@@ -16,6 +13,7 @@ class Chart extends Component
      */
     public function __construct()
     {
+        //
     }
 
     /**
@@ -25,6 +23,6 @@ class Chart extends Component
      */
     public function render()
     {
-        return view('components.chart');
+        return view('components.tab1');
     }
 }
