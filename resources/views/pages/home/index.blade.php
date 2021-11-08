@@ -19,5 +19,7 @@
 			</div>
         </div>
     </div>
-   <x-chart/>
+    <x-tab/>
+    {{-- <x-subject-filter/>
+    <x-chart/> --}}
 @endsection

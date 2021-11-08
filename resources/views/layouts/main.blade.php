@@ -5,8 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    {{-- jquery cdn --}}
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"
         integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    {{-- semantic ui cdn --}}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js" integrity="sha512-dqw6X88iGgZlTsONxZK9ePmJEFrmHwpuMrsUChjAw1mRUhUITE5QU9pkcSox+ynfLhL15Sv2al5A0LVyDCmtUw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    {{-- <link rel="stylesheet" href=""> --}}
     <title>Hệ thống tra cứu điểm thi THPTQG</title>
     <link rel="shortcut icon" href="favicon.png" type="image/png">
 </head>
@@ -15,24 +19,14 @@
         margin: 0;
         padding: 0;
         box-sizing: border-box;
+        /* transition: all 0.5s ease; */
+    }
+    body{
+        font-family: Arial, Helvetica, sans-serif;
     }
 
     .highcharts-legend {
         display: none;
-    }
-
-    #chart {
-        /* fill="rgb(251,166,11)" */
-    }
-
-    a {
-        color: black;
-        text-decoration: none
-    }
-
-    li,
-    ul {
-        list-style-type: none;
     }
 
     .container {
@@ -52,6 +46,20 @@
         text-align: center;
         padding-bottom: 30px;
     }
+    #chart {
+        /* fill="rgb(251,166,11)" */
+    }
+
+    a {
+        color: black;
+        text-decoration: none
+    }
+
+    li,
+    ul {
+        list-style-type: none;
+    }
+
 
     .navigation {
         -webkit-text-size-adjust: none;
@@ -134,7 +142,12 @@
         margin-left: auto;
         float: right;
     }
-
+    .center__navbar{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding:0 10px;
+    }
     .section-head__title {
         -webkit-text-size-adjust: none;
         font: 400 15px arial;
@@ -270,22 +283,21 @@
 
     {{-- header --}}
     <header class="section top-header" data-campaign="Header" style="float:none;">
-        <div class="container">
-            {{-- <h1>Hello</h1> --}}
-        </div>
+        {{-- <div class="container">
+            <h1>Hello</h1>
+        </div> --}}
     </header>
 
     {{-- nav-bar --}}
     <section class="navigation sticky">
-        <div class="container">
+        <div class="container" style="padding: 0">
 
-            <div class="navigation__logo">
-                <h1>
-                    <a href="/">
-                        <img src="https://scontent.fhan3-5.fna.fbcdn.net/v/t1.6435-9/169115770_790328241892734_1165222957541252528_n.jpg?_nc_cat=109&ccb=1-5&_nc_sid=09cbfe&_nc_ohc=WdMUPVrXFzwAX8AxE5S&_nc_ht=scontent.fhan3-5.fna&oh=7082cf96d0c29e55e04927e12a89c98d&oe=61A6B83C"
-                            height="32px" width="32px" alt="">
-                    </a>
-                </h1>
+            <nav class="center__navbar">
+                 <div class="navigation__logo">
+                <a href="/">
+                        <img src="favicon.png"
+                            height="64px" width="64px" alt="">
+                </a>
             </div>
             <nav class="navigation__list">
                 <ul class="navigation__items">
@@ -298,7 +310,7 @@
 
                 </ul>
             </nav>
-
+            </nav>
 
         </div>
     </section>
