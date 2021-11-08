@@ -16,6 +16,8 @@
     .subject__filter .form-group .value a {
     display: inline-block;
     color: #222;
+    font-weight: normal;
+    font-family: Arial, Helvetica, sans-serif;
     }
     .subject__filter .form-group .value a:not(:last-child):after {
     content: "|";
@@ -38,16 +40,16 @@
 							<div class="form-group">
 								<span class="label">Xem theo môn:</span>
 								<div class="value">
-									<a class="subject__fliter_item" class="" href="javascript:;" onclick="chartpointavg('1,2,3,4,5,6,7,8,9', 1);">Tất cả</a>
-									<a class="subject__fliter_item" href="javascript:;" onclick="chartpointavg('1',1);">Toán</a>
-									<a class="subject__fliter_item active" href="javascript:;" onclick="chartpointavg('2',1);">Ngữ văn</a>
-									<a class="subject__fliter_item" href="javascript:;" onclick="chartpointavg('3',1);">Ngoại ngữ</a>
-									<a class="subject__fliter_item" href="javascript:;" onclick="chartpointavg('4',1);">Vật lý</a>
-									<a class="subject__fliter_item" href="javascript:;" onclick="chartpointavg('5',1);">Hóa học</a>
-									<a class="subject__fliter_item" href="javascript:;" onclick="chartpointavg('6',1);">Lịch sử</a>
-									<a class="subject__fliter_item" href="javascript:;" onclick="chartpointavg('7',1);">Địa lý</a>
-									<a class="subject__fliter_item" href="javascript:;" onclick="chartpointavg('8',1);">Sinh học</a>
-									<a class="subject__fliter_item" href="javascript:;" onclick="chartpointavg('9',1);">Giáo dục công dân</a>
+									<a class="subject__fliter_item" name="all" href="javascript:;">Tất cả</a>
+									<a class="subject__fliter_item" name="toan" href="javascript:;" >Toán</a>
+									<a class="subject__fliter_item active" name="van"  href="javascript:;" >Ngữ văn</a>
+									<a class="subject__fliter_item" name="ngoai_ngu" href="javascript:;" >Ngoại ngữ</a>
+									<a class="subject__fliter_item" name="ly" href="javascript:;" >Vật lý</a>
+									<a class="subject__fliter_item" name="hoa" href="javascript:;" >Hóa học</a>
+									<a class="subject__fliter_item" name="su" href="javascript:;" >Lịch sử</a>
+									<a class="subject__fliter_item" name="dia" href="javascript:;" >Địa lý</a>
+									<a class="subject__fliter_item" name="sinh" href="javascript:;" >Sinh học</a>
+									<a class="subject__fliter_item" name="gdcd" href="javascript:;" >Giáo dục công dân</a>
 								</div>
 							</div>
 						</form>
@@ -56,6 +58,7 @@
 <script>
     $('.subject__fliter_item').each((index,item)=>{
         item.onclick =function (){
+            console.log([this.name])
             $('.subject__fliter_item.active')[0]?.classList.remove('active')
             this.classList.add("active")
         }

@@ -1,12 +1,14 @@
-<div>
+<div style="width:100%">
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 <script src="https://code.highcharts.com/stock/highstock.js"></script>
 <script src="https://code.highcharts.com/stock/modules/data.js"></script>
 <script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
 
 
-     <div id="container" id="chart" style="height: 400px;min-width: 310px;max-width:900px;margin: 0 auto;"></div>
-
+    <div id="container" id="chart"  style="height: 400px;min-width: 310px;max-width:900px;margin: 0 auto; width:100%;"></div>
+    
+      
+ 
 <script>
   let xAxisData = []
   let marks = []
@@ -19,12 +21,12 @@
       success: (result)=>{
         console.log(result)
         if(result.length === 2){
-        renderChart(result[0],result[1])
+        renderChart(result[0],result[1],'container')
         }
       }
   });
-  function renderChart(xAxisData,marks) {
-        Highcharts.chart('container', {
+  function renderChart(xAxisData,marks,element) {
+        Highcharts.chart(element, {
           chart: {
             type: 'column'
           },

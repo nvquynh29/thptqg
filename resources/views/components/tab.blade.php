@@ -19,7 +19,7 @@
     color: #222222;
     padding: 10px 0px;
   }
-  .tabs-wrapper div.active {
+  .tabs-wrapper .tabs-items div.active {
     font-weight: 700;
     color: #B75C00;
     border-bottom: 1px solid #B75C00;
@@ -34,7 +34,6 @@
     color: #222222;
     padding: 10px 0px;
     font-size: 14px;
-    transition: all 0.5s ease;
   }
   .tab-item{
     cursor: pointer;
@@ -60,14 +59,16 @@
         <div class="line"></div>
     </div>
     
-      <div class="ui tab active" data-tab="tab-0">
-        <h1>hello1</h1>  
-      </div>
-       <div class="ui tab" data-tab="tab-1">
-        <h1>hello2</h1>  
-      </div>
-       <div class="ui tab" data-tab="tab-2">
-        <h1>hello3</h1>  
+      <div class="container">
+        <div class="ui tab active" data-tab="tab-0">
+          <x-tab0/>
+        </div>
+         <div class="ui tab" data-tab="tab-1">
+          <h1>hello2</h1>
+        </div>
+         <div class="ui tab" data-tab="tab-2">
+          <h1>hello3</h1>
+        </div>
       </div>
   </div>
 
@@ -89,21 +90,20 @@
     //     changeTab(index)
     //   };
     // })
-  $.fn.api.settings.api = {
-  'get-mark' : '/mark/{sbd}',
-  'get-sugget'   : '/suggest',
-  'get-all-subject'      : '/phase-all-subject',
-  'get-phase-group'   : '/phase-group',
-  'get-phase'        : '/phase',
-  'get-top-ten'       : '/top-ten',
-  };
+  // $.fn.api.settings.api = {
+  // 'get-mark' : '/mark/{sbd}',
+  // 'get-sugget'   : '/suggest',
+  // 'get-all-subject'      : '/phase-all-subject',
+  // 'get-phase-group'   : '/phase-group',
+  // 'get-phase'        : '/phase',
+  // 'get-top-ten'       : '/top-ten',
+  // };
     $('.tabular.menu .tab-item').tab({
     alwaysRefresh: true,
     cache: true,
     apiSettings: {
       loadingDuration: 300,
       mockResponse: function(settings) {
-        settings.api.get-mark
         console.log(settings)
       }
     },
