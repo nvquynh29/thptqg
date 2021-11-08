@@ -25,7 +25,7 @@
     border-bottom: 1px solid #B75C00;
     margin-bottom: -1px;
   }
-  .tabs-wrapper div+div {
+  .tabs-wrapper .tab-item {
     margin-left: 70px;
   
   }
@@ -59,17 +59,17 @@
         <div class="line"></div>
     </div>
     
-      <div class="container">
-        <div class="ui tab active" data-tab="tab-0">
-          <x-tab0/>
-        </div>
-         <div class="ui tab" data-tab="tab-1">
-          <h1>hello2</h1>
-        </div>
-         <div class="ui tab" data-tab="tab-2">
-          <h1>hello3</h1>
-        </div>
+    <div class="container">
+      <div class="ui tab active" data-tab="tab-0">
+        <x-tab0/>
       </div>
+        <div class="ui tab" data-tab="tab-1">
+        <h1>hello2</h1>
+      </div>
+        <div class="ui tab" data-tab="tab-2">
+        <h1>hello3</h1>
+      </div>
+    </div>
   </div>
 
 </div>

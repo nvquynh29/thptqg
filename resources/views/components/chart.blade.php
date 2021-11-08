@@ -19,7 +19,6 @@
       contentType: "application/json; charset=utf-8",
       dataType: "json",
       success: (result)=>{
-        console.log(result)
         if(result.length === 2){
         renderChart(result[0],result[1],'container')
         }

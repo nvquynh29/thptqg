@@ -318,6 +318,9 @@
     @yield('body')
 
     {{-- script --}}
+    <script src="https://code.highcharts.com/stock/highstock.js"></script>
+    <script src="https://code.highcharts.com/stock/modules/data.js"></script>
+    <script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
     <script>
 
     </script>

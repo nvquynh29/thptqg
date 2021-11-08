@@ -12,18 +12,21 @@
     .subject__filter .form-group .value {
     display: inline;
     }
-    .subject__filter .form-group .value a {
+    .subject__filter .form-group .value a ,
+    .cities__filter .form-group .value a {
     display: inline-block;
     color: #222;
     font-weight: normal;
     font-family: Arial, Helvetica, sans-serif;
     }
-    .subject__filter .form-group .value a:not(:last-child):after {
+    .subject__filter .form-group .value a:not(:last-child):after,
+    .cities__filter .form-group .value a:not(:last-child):after{
     content: "|";
     display: inline-block;
     margin: 0 10px;
     }
-    .subject__filter .form-group .value a.active {
+    .subject__filter .form-group .value a.active,
+    .cities__filter .form-group .value a.active{
     color: #B75C00;
     }
     .subject__filter .e-form {
@@ -35,6 +38,9 @@
     }
     .ui.search.dropdown>input.search{
         height: 100%;
+    }
+    .cities__filter{
+        margin: 20px;
     }
 </style>
 
@@ -60,18 +66,33 @@
 						</form>
 					</div>
 </div>
+
+{{-- chon cum thi --}}
 <div>
-   <div class="ui dropdown search selection dropdown">
-        <input type="hidden" name="cities" style="height: 100%">
-        <i class="dropdown icon" style="position: absolute; top:20px"></i>
-        <div class="default text">Thành phố</div>
-        <div class="menu">
-            <div class="item" data-value="VietNam">Bắc Ninh</div>
-            <div class="item" data-value="VietNam1">Hà Nội</div>
+    <div class="form-group cities__filter">
+		<div class="form-group" id="seach_diemthi">
+            <div class="form-group">
+                <span class="label">Xem theo môn:</span>
+                <div class="value">
+                    <a class="cities__fliter_item active" name="all" href="javascript:;">Toàn quốc</a>
+                    <a class="cities__fliter_item" name="Hà Nội" href="javascript:;" >Hà Nội</a>
+                     <a class="cities__fliter_item" name="TP.Hồ Chí Minh" href="javascript:;" >TP.Hồ Chí Minh</a>
+                </div>
+            </div>						
         </div>
     </div>
-
+    {{--cities selector --}}
+   <div class="ui dropdown search selection dropdown" style="padding: 3px 25px;">
+        <input type="hidden" name="cities" style="height: 100%" id="selected_city">
+        <i class="dropdown icon" style="position: absolute; "></i>
+        <div class="default text">Toàn quốc</div>
+        <div class="menu" >
+           
+        </div>
+    </div>
 </div>
+<div id="chart-container" style="height: 400px;min-width: 310px;max-width:900px;margin: 0 auto; width:100%;"></div>
+
 
 <script>
     /* fliter js */
@@ -82,20 +103,43 @@
             this.classList.add("active")
         }
     })
+    $('.cities__fliter_item').each((index,item)=>{
+        item.onclick =function (){
+            console.log([this.name])
+            $('.cities__fliter_item.active')[0]?.classList.remove('active')
+            this.classList.add("active")
+        }
+    })
     /* select cities js */
      $('.ui.dropdown')
         .dropdown({
             clearable: true,
             placeholder: 'Chọn thành phố'
         })
-    
-    
-  
-  
+     
+    $(".ui.dropdown")
+    .dropdown({
+        onChange:function(place_id,place_name){
+            console.log({place_id,place_name})
+            }})
+               
+   $.ajax({
+        type: "GET",
+        url: `api/places`,
+        data: '',
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: (result)=>{
+            const cities = result.map((data)=>{
+                return {value:String(data.place_id).padStart(2, '0'), text:data.name, name:data.place_name} 
+            })
+             $('.ui.dropdown')
+            .dropdown('setup menu',{values:cities})
+        }
+    });
     /* chart js */
     let xAxisData = []
     let marks = []
-    $('')
     $.ajax({
         type: "GET",
         url: `api/phase`,
@@ -103,9 +147,8 @@
         contentType: "application/json; charset=utf-8",
         dataType: "json",
         success: (result)=>{
-            console.log(result)
             if(result.length === 2){
-            renderChart(result[0],result[1],'container')
+            renderChart(result[0],result[1],'chart-container')
             }
         }
     });
