@@ -159,6 +159,22 @@ class MarkController extends Controller
         return [$markArray, $countArray];
     }
 
+    private function getSubjectName($code)
+    {
+        $subjectNames = [
+            'toan'      => 'Toán',
+            'van'       => 'Ngữ văn',
+            'ngoai_ngu' => 'Ngoại ngữ',
+            'ly'        => 'Vật lý',
+            'hoa'       => 'Hóa học',
+            'sinh'      => 'Sinh học',
+            'su'        => 'Lịch sử',
+            'dia'       => 'Địa lý',
+            'gdcd'      => 'Giáo dục công dân',
+        ];
+        return $subjectNames[$code];
+    }
+
     public function phaseAllSubject(Request $request)
     {
         $subjects = ['toan', 'van', 'ngoai_ngu', 'ly', 'hoa', 'sinh', 'su', 'dia', 'gdcd'];
@@ -166,7 +182,8 @@ class MarkController extends Controller
         $data = [];
         for ($i = 0; $i < $length; $i++) {
             $request->merge(['subject' => $subjects[$i]]);
-            $data[$subjects[$i]] = $this->phase($request);
+            $name = $this->getSubjectName($subjects[$i]);
+            $data[$subjects[$i]] = ['data' => $this->phase($request), 'name' => $name];
         }
         return response()->json($data);
     }
@@ -176,12 +193,25 @@ class MarkController extends Controller
         $subject = $request->query('subject');
         $desc = $request->query('desc');
         $marks = DB::table('marks')
-            ->select('marks.place_id', 'places.place_name', DB::raw("round(AVG($subject),2) as temp"))
+            ->select('marks.place_id', 'places.place_name', DB::raw("round(AVG($subject),2) as mark"))
             ->groupBy('marks.place_id', 'places.place_name')
             ->join('places', 'places.place_id', '=', 'marks.place_id')
-            ->orderBy('temp', $desc)
+            ->orderBy('mark', $desc)
             ->take(10)
             ->get();
         return response($marks);
+    }
+
+    public function topTenAll(Request $request)
+    {
+        $subjects = ['toan', 'van', 'ngoai_ngu', 'ly', 'hoa', 'sinh', 'su', 'dia', 'gdcd'];
+        $length = count($subjects);
+        $data = [];
+        for ($i = 0; $i < $length; $i++) {
+            $request->merge(['subject' => $subjects[$i]]);
+            $name = $this->getSubjectName($subjects[$i]);
+            $data[$subjects[$i]] = ['data' => $this->topTen($request)->original, 'name' => $name];
+        }
+        return response()->json($data);
     }
 }
