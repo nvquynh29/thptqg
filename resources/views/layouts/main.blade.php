@@ -1,260 +1,289 @@
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-    <title>Document</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <title>Hệ thống tra cứu điểm thi THPTQG</title>
+    <link rel="shortcut icon" href="favicon.png" type="image/png">
 </head>
 <style>
-  *{
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-  .highcharts-legend{
-    display: none;
-  }
-  #chart{
-/* fill="rgb(251,166,11)" */
-  }
-  a{
-    color: black;
-    text-decoration: none
-  }
-  li, ul {
-    list-style-type: none;
-}
-  .container{
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    .highcharts-legend {
+        display: none;
+    }
+
+    #chart {
+        /* fill="rgb(251,166,11)" */
+    }
+
+    a {
+        color: black;
+        text-decoration: none
+    }
+
+    li,
+    ul {
+        list-style-type: none;
+    }
+
+    .container {
         -webkit-text-size-adjust: none;
-    color: #222;
-    font: 400 15px arial;
-    font-size: 14px;
-    line-height: 1.4;
-    -webkit-box-direction: normal;
-    text-rendering: optimizeLegibility;
-    box-sizing: border-box;
-    margin: 0 auto;
-    max-width: 1130px;
-    padding: 0 15px;
-    position: relative;
-    width: 100%;
-    text-align: center;
-    padding-bottom: 30px;
-  }
-  .navigation{
+        color: #222;
+        font: 400 15px arial;
+        font-size: 14px;
+        line-height: 1.4;
+        -webkit-box-direction: normal;
+        text-rendering: optimizeLegibility;
+        box-sizing: border-box;
+        margin: 0 auto;
+        max-width: 1130px;
+        padding: 0 15px;
+        position: relative;
+        width: 100%;
+        text-align: center;
+        padding-bottom: 30px;
+    }
+
+    .navigation {
         -webkit-text-size-adjust: none;
-    color: #222;
-    font: 400 15px arial;
-    font-size: 14px;
-    line-height: 1.4;
-    text-rendering: optimizeLegibility;
-    margin: 0;
-    box-sizing: border-box;
-    display: block;
-    position: sticky;
-    top: 0;
-    background: #fff;
-    box-shadow: inset 0 -1px 0 #e5e5e5;
-    padding: 15px 0;
-    transition: all .3s cubic-bezier(.075,.82,.165,1);
-    z-index: 99;
-  }
-  .navigation__logo{
-    float: left;
-  }
-  .navigation__logo img{
-    border-radius: 50%;
+        color: #222;
+        font: 400 15px arial;
+        font-size: 14px;
+        line-height: 1.4;
+        text-rendering: optimizeLegibility;
+        margin: 0;
+        box-sizing: border-box;
+        display: block;
+        position: sticky;
+        top: 0;
+        background: #fff;
+        box-shadow: inset 0 -1px 0 #e5e5e5;
+        padding: 15px 0;
+        transition: all .3s cubic-bezier(.075, .82, .165, 1);
+        z-index: 99;
+    }
+
+    .navigation__logo {
+        float: left;
+    }
+
+    .navigation__logo img {
+        border-radius: 50%;
 
     }
-  .navigation__items {
-    -webkit-box-align: center;
-    -ms-flex-align: center;
-    align-items: center;
-    color: #5e6678;
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-    font-size: 12px;
-    margin-bottom: 0;
-}
-  .navigation__items {
-      -webkit-box-align: center;
-      -ms-flex-align: center;
-      align-items: center;
-      color: #5e6678;
-      display: -webkit-box;
-      display: -ms-flexbox;
-      display: flex;
-      font-size: 12px;
-      margin-bottom: 0;
-  }
-  .navigation__item.active {
-    color: #1f2228;
-    font-weight: 700;
-}
-.navigation__item+* {
-    margin-left: 20px;
-}
-  .sticky {
-    position: sticky;
-    top: 0;
-    z-index: 1020;
-}
-  .navigation__list{
-    -webkit-text-size-adjust: none;
-    color: #222;
-    font: 400 15px arial;
-    font-size: 14px;
-    line-height: 1.4;
-    text-rendering: optimizeLegibility;
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    display: block;
-    margin-left: auto;
-    float: right;
-  }
-  .section-head__title{
-        -webkit-text-size-adjust: none;
-    font: 400 15px arial;
-    -webkit-box-direction: normal;
-    text-rendering: optimizeLegibility;
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-size: inherit;
-    line-height: inherit;
-    font-weight: 700;
-    color: #B75C00;
-    text-align: center;
-    width: 100%;
-    margin-bottom: 30px;
-    margin-top: 30px;
-  }
-  .section-head__searchform{
-    -webkit-text-size-adjust: none;
-    color: #222;
-    font: 400 15px arial;
-    font-size: 14px;
-    line-height: 1.4;
-    -webkit-box-direction: normal;
-    text-align: center;
-    text-rendering: optimizeLegibility;
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    display: block;
-    width: 100%;
-  }
 
-  .search_submit{
-        -webkit-text-size-adjust: none;
-    -webkit-box-direction: normal;
-    text-rendering: optimizeLegibility;
-    box-sizing: border-box;
-    font-family: sans-serif;
-    line-height: 1.15;
-    margin: 0;
-    text-transform: none;
-    -webkit-appearance: button;
-    overflow: visible;
-    outline: none;
-    cursor: pointer;
-    border-radius: 4px;
-    display: inline-block;
-    padding: 8px;
-    float: right;
-    width: 122px;
-    height: 50px;
-    text-align: center;
-    font-size: 15px;
-    color: #fff;
-    background: #B75C00;
-    white-space: nowrap;
-    border: 0;
-  }
-  .form-group{
-    display: flex;
-    justify-content: center;
-  }
- .form-control {
-        -webkit-text-size-adjust: none;
-    -webkit-box-direction: normal;
-    text-rendering: optimizeLegibility;
-    box-sizing: border-box;
-    line-height: 1.15;
-    overflow: visible;
-    background: #fff;
-    font-family: arial;
-    outline: none;
-    transition-duration: .2s;
-    transition-property: all;
-    transition-timing-function: cubic-bezier(.7,1,.7,1);
-    appearance: none;
-    border: 1px solid #e5e5e5;
-    color: #4F4F4F;
-    padding: 4px 10px;
-    font-size: 15px;
-    margin: 0 10px 0 0;
-    width: 310px;
-    max-width: 100%;
-    border-radius: 3px;
-    height: 50px;
-  }
-  .width_common {
-    float: left;
-    width: 100%;
-  }
-  .section-head {
-      background: #F7F7F7;
-  }
-  .section-head__title {
-      font-weight: 700;
-      font-family: "Merriweather",serif;
-      color: #B75C00 !important;
-      text-align: center;
-      width: 100%;
-      margin-bottom: 30px;
-      margin-top: 30px;
-      display: flex;
-      flex-direction: column;
-  }
-  .section-head__title span {
-      font-size: 18px;
-      line-height: calc(21/18);
-      display: block;
-      margin-bottom: 10px;
-      font-family: Arial, Helvetica, sans-serif;
-      font-weight: 400;
-      color: #B75C00;
+    .navigation__items {
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+        color: #5e6678;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        font-size: 12px;
+        margin-bottom: 0;
+    }
 
-  }
-  .section-head__title strong {
-      font-size: 35px;
-      color: #B75C00;
+    .navigation__items {
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+        color: #5e6678;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        font-size: 12px;
+        margin-bottom: 0;
+    }
 
-  }
+    .navigation__item.active {
+        color: #1f2228;
+        font-weight: 700;
+    }
+
+    .navigation__item+* {
+        margin-left: 20px;
+    }
+
+    .sticky {
+        position: sticky;
+        top: 0;
+        z-index: 1020;
+    }
+
+    .navigation__list {
+        -webkit-text-size-adjust: none;
+        color: #222;
+        font: 400 15px arial;
+        font-size: 14px;
+        line-height: 1.4;
+        text-rendering: optimizeLegibility;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        display: block;
+        margin-left: auto;
+        float: right;
+    }
+
+    .section-head__title {
+        -webkit-text-size-adjust: none;
+        font: 400 15px arial;
+        -webkit-box-direction: normal;
+        text-rendering: optimizeLegibility;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-size: inherit;
+        line-height: inherit;
+        font-weight: 700;
+        color: #B75C00;
+        text-align: center;
+        width: 100%;
+        margin-bottom: 30px;
+        margin-top: 30px;
+    }
+
+    .section-head__searchform {
+        -webkit-text-size-adjust: none;
+        color: #222;
+        font: 400 15px arial;
+        font-size: 14px;
+        line-height: 1.4;
+        -webkit-box-direction: normal;
+        text-align: center;
+        text-rendering: optimizeLegibility;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        display: block;
+        width: 100%;
+    }
+
+    .search_submit {
+        -webkit-text-size-adjust: none;
+        -webkit-box-direction: normal;
+        text-rendering: optimizeLegibility;
+        box-sizing: border-box;
+        font-family: sans-serif;
+        line-height: 1.15;
+        margin: 0;
+        text-transform: none;
+        -webkit-appearance: button;
+        overflow: visible;
+        outline: none;
+        cursor: pointer;
+        border-radius: 4px;
+        display: inline-block;
+        padding: 8px;
+        float: right;
+        width: 122px;
+        height: 50px;
+        text-align: center;
+        font-size: 15px;
+        color: #fff;
+        background: #B75C00;
+        white-space: nowrap;
+        border: 0;
+    }
+
+    .form-group {
+        display: flex;
+        justify-content: center;
+    }
+
+    .form-control {
+        -webkit-text-size-adjust: none;
+        -webkit-box-direction: normal;
+        text-rendering: optimizeLegibility;
+        box-sizing: border-box;
+        line-height: 1.15;
+        overflow: visible;
+        background: #fff;
+        font-family: arial;
+        outline: none;
+        transition-duration: .2s;
+        transition-property: all;
+        transition-timing-function: cubic-bezier(.7, 1, .7, 1);
+        appearance: none;
+        border: 1px solid #e5e5e5;
+        color: #4F4F4F;
+        padding: 4px 10px;
+        font-size: 15px;
+        margin: 0 10px 0 0;
+        width: 310px;
+        max-width: 100%;
+        border-radius: 3px;
+        height: 50px;
+    }
+
+    .width_common {
+        float: left;
+        width: 100%;
+    }
+
+    .section-head {
+        background: #F7F7F7;
+    }
+
+    .section-head__title {
+        font-weight: 700;
+        font-family: "Merriweather", serif;
+        color: #B75C00 !important;
+        text-align: center;
+        width: 100%;
+        margin-bottom: 30px;
+        margin-top: 30px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .section-head__title span {
+        font-size: 18px;
+        line-height: calc(21/18);
+        display: block;
+        margin-bottom: 10px;
+        font-family: Arial, Helvetica, sans-serif;
+        font-weight: 400;
+        color: #B75C00;
+
+    }
+
+    .section-head__title strong {
+        font-size: 35px;
+        color: #B75C00;
+
+    }
+
 </style>
-<body>
-    
-{{-- header --}}
-<header class="section top-header" data-campaign="Header" style="float:none;">
-			<div class="container">
-			{{-- <h1>Hello</h1> --}}
-			</div>
-</header>
 
-{{-- nav-bar --}}
-<section class="navigation sticky">
+<body>
+
+    {{-- header --}}
+    <header class="section top-header" data-campaign="Header" style="float:none;">
+        <div class="container">
+            {{-- <h1>Hello</h1> --}}
+        </div>
+    </header>
+
+    {{-- nav-bar --}}
+    <section class="navigation sticky">
         <div class="container">
 
-    <div class="navigation__logo">
+            <div class="navigation__logo">
                 <h1>
                     <a href="/">
-                        <img src="https://scontent.fhan3-5.fna.fbcdn.net/v/t1.6435-9/169115770_790328241892734_1165222957541252528_n.jpg?_nc_cat=109&ccb=1-5&_nc_sid=09cbfe&_nc_ohc=WdMUPVrXFzwAX8AxE5S&_nc_ht=scontent.fhan3-5.fna&oh=7082cf96d0c29e55e04927e12a89c98d&oe=61A6B83C" height="32px" width="32px" alt="">
+                        <img src="https://scontent.fhan3-5.fna.fbcdn.net/v/t1.6435-9/169115770_790328241892734_1165222957541252528_n.jpg?_nc_cat=109&ccb=1-5&_nc_sid=09cbfe&_nc_ohc=WdMUPVrXFzwAX8AxE5S&_nc_ht=scontent.fhan3-5.fna&oh=7082cf96d0c29e55e04927e12a89c98d&oe=61A6B83C"
+                            height="32px" width="32px" alt="">
                     </a>
                 </h1>
             </div>
@@ -266,24 +295,25 @@
                     <li class="navigation__item">
                         <a href="/tra-cuu-dai-hoc">tra cứu đại học</a>
                     </li>
-                
+
                 </ul>
             </nav>
 
 
         </div>
-</section>
-{{-- body --}}
-@yield('body')
+    </section>
+    {{-- body --}}
+    @yield('body')
 
-{{-- script --}}
-<script>
+    {{-- script --}}
+    <script>
 
-</script>
-{{-- footer --}}
+    </script>
+    {{-- footer --}}
 
-<footer>
+    <footer>
 
-</footer>
+    </footer>
 </body>
+
 </html>
