@@ -47,8 +47,8 @@ class MarkController extends Controller
         if (isset($group)) {
             $subjects = $this->getSubjectsByGroup($group);
             $khtn = $group == 'A' || $group == 'A1' || $group == 'B';
-            $mark = Mark::select($subjects)->where('khtn', $khtn)->get();
-            foreach ($mark as $value) {
+            $marks = Mark::select($subjects)->where('khtn', $khtn)->get();
+            foreach ($marks as $value) {
                 $sum = $value->{$subjects[0]}+$value->{$subjects[1]}+$value->{$subjects[2]};
                 $result[intval($sum)]++;
             }
@@ -62,9 +62,66 @@ class MarkController extends Controller
         $place = Place::where('place_id', $record->place_id)->first();
         $record->place = $place->place_name;
         if ($record) {
-            return response()->json($record);
+            $suggest = $this->suggest($record, 0, 30);
+            return response()->json(['data' => $record, 'suggest' => $suggest]);
         }
         return response('Not found', 404);
+    }
+
+    private function getMaxGroup($record, $khtn)
+    {
+        $groups = null;
+        if ($khtn) {
+            $a = $record->toan + $record->ly + $record->hoa;
+            $a1 = $record->toan + $record->ly + $record->ngoai_ngu;
+            $b = $record->toan + $record->sinh + $record->hoa;
+            $groups = array(1 => $a, 2 => $a1, 3 => $b);
+        } else {
+            $c = $record->van + $record->su + $record->dia;
+            $d = $record->toan + $record->van + $record->ngoai_ngu;
+            $groups = array(4 => $c, 5 => $d);
+        }
+        $point = max($groups);
+        $maxGroupId = array_keys($groups, $point);
+        $res = ['group_id' => $maxGroupId, 'point' => $point];
+        return $res;
+    }
+
+    public function suggest($record, $start, $count)
+    {
+        $groups = [1 => 'A', 2 => 'A1', 3 => 'B', 4 => 'C', 5 => 'D'];
+        $khtn = $record->khtn;
+        $maxGroup = $this->getMaxGroup($record, $khtn);
+        $point = round($maxGroup['point'], 2);
+        $res = DB::table('major_group')
+            ->select('majors.major_code', 'majors.major_name', 'universities.uni_name', 'standard_point',
+                DB::raw("round(($point - standard_point),2) as delta"))
+            ->where('group_id', '=', $maxGroup['group_id'])
+            ->join('majors', 'majors.id', '=', 'major_group.major_id')
+            ->join('universities', 'majors.uni_code', '=', 'universities.uni_code')
+            ->havingRaw('delta <= ?', [3])
+            ->orderBy('delta', 'desc')
+            ->offset($start)
+            ->take($count)
+            ->get();
+        foreach ($res as $value) {
+            $value->group = $groups[intval($maxGroup['group_id'])];
+            $value->point = $point;
+        }
+        return $res;
+    }
+
+    public function suggestMajors(Request $request)
+    {
+        $request->validate(['sbd' => 'string|required']);
+        $start = 0;
+        $count = 30;
+        if ($request->has('start') && $request->has('count')) {
+            $start = $request->query('start');
+            $count = $request->query('count');
+        }
+        $record = Mark::where('sbd', $request->sbd)->first();
+        return $this->suggest($record, $start, $count);
     }
 
     public function phase(Request $request)
@@ -127,6 +184,4 @@ class MarkController extends Controller
             ->get();
         return response($marks);
     }
-
-    // suggest major api
 }

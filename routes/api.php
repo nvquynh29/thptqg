@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Route;
  */
 
 Route::get('/mark/{sbd}', [MarkController::class, 'show']);
-Route::get('/phase-subject', [MarkController::class, 'phaseBySubject']);
+Route::get('/suggest', [MarkController::class, 'suggestMajors']);
 Route::get('/phase-all-subject', [MarkController::class, 'phaseAllSubject']);
 Route::get('/phase-group', [MarkController::class, 'phaseByGroup']);
 Route::get('/phase', [MarkController::class, 'phase']);
