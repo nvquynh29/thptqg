@@ -127,7 +127,7 @@ class MarkController extends Controller
     public function phase(Request $request)
     {
         $placeId = $request->query('place_id');
-        $subject = $request->query('subject');
+        $subject = $request->input('subject');
         $filter = null;
         if (isset($placeId) && isset($subject)) {
             $filter = DB::table('marks');

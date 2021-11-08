@@ -40,125 +40,58 @@
         height: 100%;
     }
     .cities__filter{
-        margin: 20px;
+        margin-right: 20px;
     }
 </style>
 
 <div>
-    <!-- Simplicity is the ultimate sophistication. - Leonardo da Vinci -->
-    <div class="subject__filter">
-						<form action="" class="e-form">
-							<div class="form-group">
-								<span class="label">Xem theo môn:</span>
-								<div class="value">
-									<a class="subject__fliter_item active" name="all" href="javascript:;">Tất cả</a>
-									<a class="subject__fliter_item" name="toan" href="javascript:;" >Toán</a>
-									<a class="subject__fliter_item" name="van"  href="javascript:;" >Ngữ văn</a>
-									<a class="subject__fliter_item" name="ngoai_ngu" href="javascript:;" >Ngoại ngữ</a>
-									<a class="subject__fliter_item" name="ly" href="javascript:;" >Vật lý</a>
-									<a class="subject__fliter_item" name="hoa" href="javascript:;" >Hóa học</a>
-									<a class="subject__fliter_item" name="su" href="javascript:;" >Lịch sử</a>
-									<a class="subject__fliter_item" name="dia" href="javascript:;" >Địa lý</a>
-									<a class="subject__fliter_item" name="sinh" href="javascript:;" >Sinh học</a>
-									<a class="subject__fliter_item" name="gdcd" href="javascript:;" >Giáo dục công dân</a>
-								</div>
-							</div>
-						</form>
-					</div>
+
+    
 </div>
 
 {{-- chon cum thi --}}
-<div>
-    <div class="form-group cities__filter">
-		<div class="form-group" id="seach_diemthi">
-            <div class="form-group">
-                <span class="label">Xem theo môn:</span>
-                <div class="value">
-                    <a class="cities__fliter_item active" name="all" href="javascript:;">Toàn quốc</a>
-                    <a class="cities__fliter_item" name="Hà Nội" href="javascript:;" >Hà Nội</a>
-                     <a class="cities__fliter_item" name="TP.Hồ Chí Minh" href="javascript:;" >TP.Hồ Chí Minh</a>
-                </div>
-            </div>						
-        </div>
-    </div>
-    {{--cities selector --}}
-   <div class="ui dropdown search selection dropdown" style="padding: 3px 25px;">
-        <input type="hidden" name="cities" style="height: 100%" id="selected_city">
-        <i class="dropdown icon" style="position: absolute; "></i>
-        <div class="default text">Toàn quốc</div>
-        <div class="menu" >
-           
-        </div>
-    </div>
+
+<div id="charts" style="height: fit-content;min-width: 310px;max-width:900px;margin: 0 auto; width:100%;">
+    <div id="chart-container" style="width: 100%;height: 100%;" ></div>
+   
 </div>
-<div id="chart-container" style="height: 400px;min-width: 310px;max-width:900px;margin: 0 auto; width:100%;"></div>
 
 
 <script>
     /* fliter js */
-    $('.subject__fliter_item').each((index,item)=>{
-        item.onclick =function (){
-            console.log([this.name])
-            $('.subject__fliter_item.active')[0]?.classList.remove('active')
-            this.classList.add("active")
-        }
-    })
-    $('.cities__fliter_item').each((index,item)=>{
-        item.onclick =function (){
-            console.log([this.name])
-            $('.cities__fliter_item.active')[0]?.classList.remove('active')
-            this.classList.add("active")
-        }
-    })
-    /* select cities js */
-     $('.ui.dropdown')
-        .dropdown({
-            clearable: true,
-            placeholder: 'Chọn thành phố'
-        })
-     
-    $(".ui.dropdown")
-    .dropdown({
-        onChange:function(place_id,place_name){
-            console.log({place_id,place_name})
-            }})
-               
-   $.ajax({
-        type: "GET",
-        url: `api/places`,
-        data: '',
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        success: (result)=>{
-            const cities = result.map((data)=>{
-                return {value:String(data.place_id).padStart(2, '0'), text:data.name, name:data.place_name} 
-            })
-             $('.ui.dropdown')
-            .dropdown('setup menu',{values:cities})
-        }
-    });
+    
+
+
+
     /* chart js */
     let xAxisData = []
     let marks = []
     $.ajax({
         type: "GET",
-        url: `api/phase`,
-        data: {"subject": "toan","place_id":"all"},
+        url: `api/top-ten`,
+        data: {"subject": "toan","desc":"asc"},
         contentType: "application/json; charset=utf-8",
         dataType: "json",
         success: (result)=>{
-            if(result.length === 2){
-            renderChart(result[0],result[1],'chart-container')
-            }
+            console.log(result)
+            const chartStack  = $('#charts')
+            const containerCreator = `
+                 <div id="${'container-chart_of_'+ ''}" style="width: 100%;height: 100%;" ></div>
+            `
+            chartStack.append(containerCreator );
+            // if(result.length === 2){
+            //     renderChart(result[0],result[1],'chart-container')
+            // }
         }
     });
-    function renderChart(xAxisData,marks,element) {
+
+    function renderChart(xAxisData,marks,element,chartTitle) {
             Highcharts.chart(element, {
             chart: {
                 type: 'column'
             },
             title: {
-                text: 'Phổ điểm môn Toán'
+                text: chartTitle,
             },
             subtitle: {
                 text: ''
@@ -178,7 +111,7 @@
                 }
             },
             tooltip: {
-                headerFormat: 'Điểm  <strong>{point.key} </strong> khoảng',
+                headerFormat: 'Điểm  <strong>{point.key} </strong> có',
                 pointFormat: '<tr><td style="color:black;padding:0"> <strong>{point.y}</strong> thí sinh </td>'+'</tr>',
                 footerFormat: '</table>',
                 shared: true,

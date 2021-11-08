@@ -64,10 +64,10 @@
         <x-tab0/>
       </div>
         <div class="ui tab" data-tab="tab-1">
-        <h1>hello2</h1>
+         <x-tab1/>
       </div>
         <div class="ui tab" data-tab="tab-2">
-        <h1>hello3</h1>
+         <x-tab2/>
       </div>
     </div>
   </div>
@@ -99,8 +99,9 @@
   // 'get-top-ten'       : '/top-ten',
   // };
     $('.tabular.menu .tab-item').tab({
+    evaluateScripts : 'once',
     alwaysRefresh: true,
-    cache: true,
+    cache: false,
     apiSettings: {
       loadingDuration: 300,
       mockResponse: function(settings) {
