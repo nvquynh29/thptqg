@@ -126,17 +126,23 @@ class MarkController extends Controller
 
     public function phase(Request $request)
     {
+
         $placeId = $request->query('place_id');
         $subject = $request->input('subject');
-        $filter = null;
-        if (isset($placeId) && isset($subject)) {
-            $filter = DB::table('marks');
-            if ($placeId == 'all') {
-                $filter = $filter->whereNotNull($subject)->pluck($subject);
-            } else {
-                $filter = $filter->where('place_id', $placeId)->whereNotNull($subject)->pluck($subject);
+        if ($subject !== 'all') {
+            $filter = null;
+            if (isset($placeId) && isset($subject)) {
+                $filter = DB::table('marks');
+                if ($placeId == 'all') {
+                    $filter = $filter->whereNotNull($subject)->pluck($subject);
+                } else {
+                    $filter = $filter->where('place_id', $placeId)->whereNotNull($subject)->pluck($subject);
+                }
+                return $this->phaseBySubject($filter, $subject);
             }
-            return $this->phaseBySubject($filter, $subject);
+        }
+        else{
+            
         }
         return response('All input is required', 400);
     }

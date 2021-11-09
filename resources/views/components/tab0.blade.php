@@ -1,7 +1,10 @@
 <div>
     
 <style>
-  
+    a{
+        color: #000;
+        text-decoration: none;
+    }
     .subject__filter .form-group {
     text-align: center;
     padding: 13px 0;
@@ -42,25 +45,74 @@
     .cities__filter{
         margin-right: 20px;
     }
+    .form-group .value a.active {
+    color: #B75C00;
+    }
+    .o-phodiem__form .form-group .value a:not(:last-child):after {
+    content: "|";
+    display: inline-block;
+    margin: 0 10px;
+    }
 </style>
 
 <div>
 
     
 </div>
+        <div class="subject__filter">
+        <form action="" class="e-form">
+            <div class="form-group">
+                <span class="label">Xem theo môn:</span>
+                <div class="value">
+                    <a class="subject__fliter_item-tab0 active" name="all" href="javascript:;">Tất cả</a>
+                    <a class="subject__fliter_item-tab0" name="toan" href="javascript:;" >Toán</a>
+                    <a class="subject__fliter_item-tab0" name="van"  href="javascript:;" >Ngữ văn</a>
+                    <a class="subject__fliter_item-tab0" name="ngoai_ngu" href="javascript:;" >Ngoại ngữ</a>
+                    <a class="subject__fliter_item-tab0" name="ly" href="javascript:;" >Vật lý</a>
+                    <a class="subject__fliter_item-tab0" name="hoa" href="javascript:;" >Hóa học</a>
+                    <a class="subject__fliter_item-tab0" name="su" href="javascript:;" >Lịch sử</a>
+                    <a class="subject__fliter_item-tab0" name="dia" href="javascript:;" >Địa lý</a>
+                    <a class="subject__fliter_item-tab0" name="sinh" href="javascript:;" >Sinh học</a>
+                    <a class="subject__fliter_item-tab0" name="gdcd" href="javascript:;" >Giáo dục công dân</a>
+                </div>
+            </div>
+        </form>
+    </div>  
+    {{-- chon cum thi --}}
 
-{{-- chon cum thi --}}
+    <div class="o-phodiem__form">
+        <form action="" class="e-form">
+            <div class="form-group">
+                <span class="label">Sắp xếp: </span>
+                <div class="value">
+                    <a class="avg-item-tab0 avgbottom active" name="desc" href="javascript:;" >Thấp nhất</a>
+                    <a class="avg-item-tab0 avgtop" name="acs" href="javascript:;" >Cao nhất</a>
+                    
+                </div>
+            </div>
+        </form>
+    </div>
 
-<div id="charts" style="height: fit-content;min-width: 310px;max-width:900px;margin: 0 auto; width:100%;">
-    <div id="chart-container" style="width: 100%;height: 100%;" ></div>
-   
-</div>
+    <div id="charts-tab0" style="height: fit-content; min-width: 310px;max-width:900px;margin: 0 auto; width:100%;"></div>
 
 
 <script>
     /* fliter js */
-    
+        $('.subject__fliter_item-tab0').each((index,item)=>{
+        item.onclick =function (){
+            $('.subject__fliter_item-tab0.active')[0]?.classList.remove('active')
+            this.classList.add("active")
+            onFilterChangeTab0()
+        }
+        })
+        $('.avg-item-tab0').each((index,item)=>{
+        item.onclick =function (){
+            $('.avg-item-tab0.active')[0]?.classList.remove('active')
+            this.classList.add("active")
+            onFilterChangeTab0()
 
+        }
+        })
 
 
     /* chart js */
@@ -133,6 +185,38 @@
             });
         
     }
+
+    const onFilterChangeTab0 = ()=>{
+        const currentSubject = $('.avg-item-tab0.active')[0].name
+        const currentDesc = $('.subject__fliter_item-tab0.active')[0].name
+        console.log({currentDesc,currentSubject})
+    }
+            /* get all subject marks */
+        $.ajax({
+        type: "GET",
+        url: `api/phase-all-subject`,
+        data: {"place_id":"all"},
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: (result)=>{
+            console.log(result)
+            for (const key in result) {
+                if (Object.hasOwnProperty.call(result, key)) {
+                    const element = result[key];
+                    const chartStack  = $('#charts-tab0')
+
+                    const containerCreator = `
+                        <div id="${'container-chart_of_'+ key}" class="tab0-chart ${key}" style="width: 100%;height: 100%;" ></div>
+                    `                    
+                    chartStack.append(containerCreator );
+                        renderChart(
+                            element.data[0],element.data[1],
+                            `container-chart_of_${key}`,
+                            `Phổ điểm môn ${element.name}`)
+                    }
+                }
+            }
+        });
 
 </script>
 </div>
