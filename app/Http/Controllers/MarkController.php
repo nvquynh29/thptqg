@@ -43,7 +43,7 @@ class MarkController extends Controller
     {
         // $result[i] => count(x), i - 1 < x <= i
         $result = array_fill(1, 30, 0);
-        $group = $request->query('group');
+        $group = $request->input('group');
         if (isset($group)) {
             $subjects = $this->getSubjectsByGroup($group);
             $khtn = $group == 'A' || $group == 'A1' || $group == 'B';
@@ -117,8 +117,8 @@ class MarkController extends Controller
         $start = 0;
         $count = 30;
         if ($request->has('start') && $request->has('count')) {
-            $start = $request->query('start');
-            $count = $request->query('count');
+            $start = $request->input('start');
+            $count = $request->input('count');
         }
         $record = Mark::where('sbd', $request->sbd)->first();
         return $this->suggest($record, $start, $count);
@@ -160,7 +160,7 @@ class MarkController extends Controller
                 $countArray[round($value / $delta)]++;
             }
         }
-        return [$markArray, $countArray];
+        return response()->json([$subject => ['data' => [$markArray, $countArray], 'name' => $this->getSubjectName($subject)]]);
     }
 
     private function getSubjectName($code)
@@ -186,16 +186,15 @@ class MarkController extends Controller
         $data = [];
         for ($i = 0; $i < $length; $i++) {
             $request->merge(['subject' => $subjects[$i]]);
-            $name = $this->getSubjectName($subjects[$i]);
-            $data[$subjects[$i]] = ['data' => $this->phase($request), 'name' => $name];
+            $data[] = $this->phase($request)->original;
         }
-        return response()->json($data);
+        return $data;
     }
 
     public function topTen(Request $request)
     {
-        $subject = $request->query('subject');
-        $desc = $request->query('desc');
+        $subject = $request->input('subject');
+        $desc = $request->input('desc');
         $marks = DB::table('marks')
             ->select('marks.place_id', 'places.place_name', DB::raw("round(AVG($subject),2) as mark"))
             ->groupBy('marks.place_id', 'places.place_name')
