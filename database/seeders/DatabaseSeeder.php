@@ -15,20 +15,41 @@ class DatabaseSeeder extends Seeder
     private static function randomMark($call)
     {
         if ($call) {
-            $delta = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0];
-            $mark = rand(0, 9) + $delta[rand(0, 4)];
-            return floatval($mark);
+            $num = rand(0, 50);
+            $p = rand(1, 100);
+            if ($num < 20) {
+                if ($p > 2 * $num) {
+                    $num += 20;
+                }
+            }
+            if ($num > 40) {
+                if ($p < 2 * $num) {
+                    $num -= 10;
+                }
+            }
+            return round($num * 0.2, 2);
         }
         return null;
     }
     private static function randomMark2($call)
     {
         if ($call) {
-            $delta = [0.00, 0.25, 0.50, 0.75, 1.00];
-            $mark = rand(0, 9) + $delta[rand(0, 3)];
-            return floatval($mark);
+            $num = rand(0, 40);
+            $p = rand(1, 100);
+            if ($num < 20) {
+                if ($p > 2 * $num) {
+                    $num += 20;
+                }
+            }
+            if ($num > 30) {
+                if ($p < 2 * $num) {
+                    $num -= 10;
+                }
+            }
+            return round($num * 0.25, 2);
         }
         return null;
+
     }
     private static function getSbd($prefix, $value)
     {
@@ -57,7 +78,7 @@ class DatabaseSeeder extends Seeder
     }
     public function run()
     {
-        $total = 1000;
+        $total = 200000;
         $numOfPlaces = 64;
         $perPlace = floor($total / $numOfPlaces);
         $remain = $total % $numOfPlaces;

@@ -50,7 +50,7 @@ class MarkController extends Controller
             $marks = Mark::select($subjects)->where('khtn', $khtn)->get();
             foreach ($marks as $value) {
                 $sum = $value->{$subjects[0]}+$value->{$subjects[1]}+$value->{$subjects[2]};
-                $result[intval($sum)]++;
+                $result[round($sum)]++;
             }
             return response($result);
         }
@@ -105,7 +105,7 @@ class MarkController extends Controller
             ->take($count)
             ->get();
         foreach ($res as $value) {
-            $value->group = $groups[intval($maxGroup['group_id'])];
+            $value->group = $groups[round($maxGroup['group_id'])];
             $value->point = $point;
         }
         return $res;
@@ -126,13 +126,14 @@ class MarkController extends Controller
 
     public function phase(Request $request)
     {
-
-        $placeId = $request->query('place_id');
+        $placeId = $request->input('place_id');
         $subject = $request->input('subject');
-        if ($subject !== 'all') {
-            $filter = null;
-            if (isset($placeId) && isset($subject)) {
-                $filter = DB::table('marks');
+        $filter = null;
+        if (isset($placeId) && isset($subject)) {
+            $filter = DB::table('marks');
+            if ($subject == 'all') {
+                return $this->phaseAllSubject($request);
+            } else {
                 if ($placeId == 'all') {
                     $filter = $filter->whereNotNull($subject)->pluck($subject);
                 } else {
@@ -140,9 +141,6 @@ class MarkController extends Controller
                 }
                 return $this->phaseBySubject($filter, $subject);
             }
-        }
-        else{
-            
         }
         return response('All input is required', 400);
     }
@@ -159,7 +157,7 @@ class MarkController extends Controller
             $length = 10 / $delta + 1;
             $countArray = array_fill(0, $length, 0);
             foreach ($data as $value) {
-                $countArray[intval($value / $delta)]++;
+                $countArray[round($value / $delta)]++;
             }
         }
         return [$markArray, $countArray];

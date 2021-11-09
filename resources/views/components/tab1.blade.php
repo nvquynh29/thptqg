@@ -75,13 +75,15 @@
                 if (Object.hasOwnProperty.call(result, key)) {
                     const chartStack  = $('#charts-tab1')
                     const element = result[key];
+                    console.log(element)
                     const containerCreator = `
-                        <div id="${'container-chart_of_'+ key}" class="tab1-chart ${key}" style="width: 100%;height: 100%;" ></div>
-                    `                    
+                        <div id="${'tab1-container-chart_of_'+ key}" class="tab1-chart ${key}" style="width: 100%;height: 100%;" ></div>
+                    `       
+                              
                     chartStack.append(containerCreator );
                         renderChart(
                             element.data[0],element.data[1],
-                            `container-chart_of_${key}`,
+                            `tab1-container-chart_of_${key}`,
                             `Phổ điểm môn ${element.name}`)
                     }
                 }
@@ -157,6 +159,22 @@
                     dataType: "json",
                     success: (result)=>{
                             console.log(result)
+                        for (const key in result) {
+                            if (Object.hasOwnProperty.call(result, key)) {
+                                const element = result[key];
+                                const chartStack  = $('#charts-tab1')
+                                
+                                const containerCreator = `
+                                    <div id="${'container-chart_of_'+ key}" class="tab1-chart ${key}" style="width: 100%;height: 100%;" ></div>
+                                `                    
+                                const a =  element.data ? element.data:element
+                                chartStack.append(containerCreator );
+                                    renderChart(
+                                        a[0],a[1],
+                                        `container-chart_of_${key}`,
+                                        `Phổ điểm môn ${element.name}`)
+                                }
+                        }                       
                     }
             }); 
                        
