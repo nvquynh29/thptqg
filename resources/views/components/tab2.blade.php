@@ -1,4 +1,4 @@
-<div>
+<div id="tab-2">
     {{-- chon cum thi --}}
     <div style="position: relative;top:-20px">
         <div class=" cities__filter">

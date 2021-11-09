@@ -51,10 +51,7 @@
 
 {{-- chon cum thi --}}
 
-<div id="charts" style="height: fit-content;min-width: 310px;max-width:900px;margin: 0 auto; width:100%;">
-    <div id="chart-container" style="width: 100%;height: 100%;" ></div>
-   
-</div>
+    <div id="charts-tab0" style="height: fit-content; min-width: 310px;max-width:900px;margin: 0 auto; width:100%;"></div>
 
 
 <script>
