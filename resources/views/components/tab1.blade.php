@@ -24,9 +24,9 @@
             <div class="form-group" >
                 <span class="label">Xem theo môn:</span>
                     <div class="value">
-                        <a class="cities__fliter_item-tab1 active" name="all" href="javascript:;">Toàn quốc</a>
-                        <a class="cities__fliter_item-tab1" name="Hà Nội" href="javascript:;" >Hà Nội</a>
-                        <a class="cities__fliter_item-tab1" name="TP.Hồ Chí Minh" href="javascript:;" >TP.Hồ Chí Minh</a>
+                        <a class="cities__fliter_item-tab1 active" id="default-selected" name="all" href="javascript:;">Toàn quốc</a>
+                        <a class="cities__fliter_item-tab1" name="01" href="javascript:;" >Hà Nội</a>
+                        <a class="cities__fliter_item-tab1" name="02" href="javascript:;" >TP.Hồ Chí Minh</a>
                 </div>					
             </div>
         </div>
@@ -41,7 +41,9 @@
         </div>
     </div>
     
-    <div id="charts-tab1" style="height: fit-content; min-width: 310px;max-width:900px;margin: 0 auto; width:100%;"></div>
+    <div id="charts-tab1" style="height: fit-content; min-width: 310px;max-width:900px;margin: 0 auto; width:100%;">
+        
+    </div>
     <script>
        
         const changeChart = (name)=>{
@@ -54,7 +56,6 @@
          /* fliter js */
         $('.subject__fliter_item-tab1').each((index,item)=>{
             item.onclick =function (){
-                console.log([this.name])
                 $('.subject__fliter_item-tab1.active')[0]?.classList.remove('active')
                 this.classList.add("active")
                 changeChart(this.name)
@@ -70,23 +71,21 @@
         contentType: "application/json; charset=utf-8",
         dataType: "json",
         success: (result)=>{
-            console.log(result)
-            for (const key in result) {
-                if (Object.hasOwnProperty.call(result, key)) {
+          result.forEach(element => {
                     const chartStack  = $('#charts-tab1')
-                    const element = result[key];
-                    console.log(element)
+                    const key =Object.keys(element)[0]
                     const containerCreator = `
                         <div id="${'tab1-container-chart_of_'+ key}" class="tab1-chart ${key}" style="width: 100%;height: 100%;" ></div>
                     `       
-                              
                     chartStack.append(containerCreator );
                         renderChart(
-                            element.data[0],element.data[1],
+                            element[key].data[0],element[key].data[1],
                             `tab1-container-chart_of_${key}`,
-                            `Phổ điểm môn ${element.name}`)
-                    }
-                }
+                            `Phổ điểm môn ${element[key].name}`)
+                            $('.ui .dropdown-tab1')
+                    .dropdown('set selected','all')
+                    $('#default-selected')[0].classList.add('active')
+          });
             }
         });
         
@@ -101,17 +100,20 @@
                     const cities = result.map((data)=>{
                         return {value:String(data.place_id).padStart(2, '0'), text:data.name, name:data.place_name} 
                     })
+                    cities.unshift({value:'all', text:'Toàn quốc', name:'Toàn quốc'})
+
                     $('.ui .dropdown-tab1')
                     .dropdown('setup menu',{values:cities})
                 }
         });   
         $('.cities__fliter_item-tab1')?.each((index,item)=>{
             item.onclick =function (){
-                console.log([this.name])
                 $('.cities__fliter_item-tab1.active')[0]?.classList.remove('active')
                 this.classList.add("active")
                 $('.ui .dropdown-tab1')
-                .dropdown('set text',this.name=='all'?"Toàn quốc":this.name)
+                .dropdown('set selected',this.name)
+                    onchangeState()
+
             }
         })
             /* select cities js */
@@ -124,16 +126,17 @@
         const onCityChangeTab1 = $(".ui .dropdown-tab1")
         .dropdown({
             onChange:function(place_id,place_name){
-                // console.log({place_id,place_name})
                 $('input').blur();
                 if(place_id == '01'){
                     $('.cities__fliter_item-tab1.active')[0]?.classList.remove('active')
                     $('.cities__fliter_item-tab1')[1]?.classList.add('active')
+                    onchangeState()
                     return ;
                 }
                 if(place_id == '02'){
                     $('.cities__fliter_item-tab1.active')[0]?.classList.remove('active')
                     $('.cities__fliter_item-tab1')[2]?.classList.add('active')
+                    onchangeState()
                     return ;
 
                 }
@@ -143,38 +146,51 @@
 
             }})
         const onchangeState = ()=>{
-            const currentCities= $('.ui .dropdown-tab1')
+            $('#charts-tab1').empty()
+            let currentCities= $('.ui .dropdown-tab1')
                 .dropdown('get value')
-                console.log(currentCities)
-                // console.log(currentCities)
+                if(!!currentCities){
+                    currentCities = 'all'
+                }
             const currentSubject = $('.subject__fliter_item-tab1.active')[0].name
                
-            //    const query =   (`'${currentCities}':'${currentSubject}'`)
-
                $.ajax({
                     type: "GET",
                     url: `api/phase`,
-                    data: {"subject":`${currentSubject}`,"place_id":String(currentCities).padStart(1, '0')},
+                    data: {"subject":`${currentSubject}`,"place_id":`${currentCities}`},
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
                     success: (result)=>{
-                            console.log(result)
-                        for (const key in result) {
-                            if (Object.hasOwnProperty.call(result, key)) {
-                                const element = result[key];
-                                const chartStack  = $('#charts-tab1')
-                                
-                                const containerCreator = `
-                                    <div id="${'container-chart_of_'+ key}" class="tab1-chart ${key}" style="width: 100%;height: 100%;" ></div>
-                                `                    
-                                const a =  element.data ? element.data:element
-                                chartStack.append(containerCreator );
-                                    renderChart(
-                                        a[0],a[1],
-                                        `container-chart_of_${key}`,
-                                        `Phổ điểm môn ${element.name}`)
-                                }
-                        }                       
+                                if(Array.isArray(result)){
+                                    result.forEach(element => {
+                            const chartStack  = $('#charts-tab1')
+                            const key =Object.keys(element)[0]
+                            const containerCreator = `
+                                <div id="${'tab1-container-chart_of_'+ key}" class="tab1-chart ${key}" style="width: 100%;height: 100%;" ></div>
+                            `       
+                            chartStack.append(containerCreator );
+                                renderChart(
+                                    element[key].data[0],element[key].data[1],
+                                    `tab1-container-chart_of_${key}`,
+                                    `Phổ điểm môn ${element[key].name}`)
+                });
+                        }else{
+                            for (const key in result) {
+                                if (Object.hasOwnProperty.call(result, key)) {
+                                    const element = result[key];
+                                    const chartStack  = $('#charts-tab1')
+                                    const containerCreator = `
+                                        <div id="${'container-chart_of_flitered_'+ key}" class="tab1-chart ${key}" style="width: 100%;height: 100%;" ></div>
+                                    `                    
+                                    chartStack.append(containerCreator );
+                                        renderChart(
+                                            element.data[0],element.data[1],
+                                            `container-chart_of_flitered_${key}`,
+                                            `Phổ điểm môn ${element.name}`)
+                                    }
+                            }  
+                           
+                        }
                     }
             }); 
                        

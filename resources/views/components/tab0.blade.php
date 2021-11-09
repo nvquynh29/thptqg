@@ -208,11 +208,11 @@
                     const containerCreator = `
                         <div id="${'tab0-container-chart_of_'+ key}" class="tab0-chart ${key}" style="width: 100%;height: 100%;" ></div>
                     `                    
-                    chartStack.append(containerCreator );
-                        renderChart(
-                            element.data[0],element.data[1],
-                            `tab0-container-chart_of_${key}`,
-                            `Phổ điểm môn ${element.name}`)
+                    // chartStack.append(containerCreator );
+                    //     renderChart(
+                    //         element.data[0],element.data[1],
+                    //         `tab0-container-chart_of_${key}`,
+                    //         `Phổ điểm môn ${element.name}`)
                     }
             }
             }
