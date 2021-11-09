@@ -53,17 +53,17 @@
 
   <div class="tabs-wrapper">
     <div class="tabs-items tabular menu">
-        <div class="tab-item active item" data-tab="tab-0">Top điểm trung bình của 10 tỉnh thành</div>
-        <div class="tab-item item" data-tab="tab-1" >Phổ điểm kỳ thi THPT quốc gia</div>
+        <div class="tab-item  item" data-tab="tab-0">Top điểm trung bình của 10 tỉnh thành</div>
+        <div class="tab-item  active item" data-tab="tab-1" >Phổ điểm kỳ thi THPT quốc gia</div>
         <div class="tab-item item" data-tab="tab-2">Phổ điểm các khối thi đại học</div>
         <div class="line"></div>
     </div>
     
     <div class="container">
-      <div class="ui tab active" data-tab="tab-0">
+      <div class="ui tab " data-tab="tab-0">
         <x-tab0/>
       </div>
-        <div class="ui tab" data-tab="tab-1">
+        <div class="ui tab active" data-tab="tab-1">
          <x-tab1/>
       </div>
         <div class="ui tab" data-tab="tab-2">
@@ -81,13 +81,14 @@
     evaluateScripts : 'once',
     alwaysRefresh: true,
     cache: false,
+    history: false,
     apiSettings: {
       loadingDuration: 300,
       mockResponse: function(settings) {
         console.log(settings)
       }
     },
-    auto: true
+    auto: false
 });
 
 </script>

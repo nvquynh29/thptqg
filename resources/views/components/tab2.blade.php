@@ -5,14 +5,14 @@
             <div class="form-group" >
                 <span class="label">Xem theo môn:</span>
                     <div class="value">
-                        <a class="cities__fliter_item active" name="all" href="javascript:;">Toàn quốc</a>
-                        <a class="cities__fliter_item" name="Hà Nội" href="javascript:;" >Hà Nội</a>
-                        <a class="cities__fliter_item" name="TP.Hồ Chí Minh" href="javascript:;" >TP.Hồ Chí Minh</a>
+                        <a class="cities__fliter_item-tab2 active" name="all" href="javascript:;">Toàn quốc</a>
+                        <a class="cities__fliter_item-tab2" name="Hà Nội" href="javascript:;" >Hà Nội</a>
+                        <a class="cities__fliter_item-tab2" name="TP.Hồ Chí Minh" href="javascript:;" >TP.Hồ Chí Minh</a>
                 </div>					
             </div>
         </div>
         {{--cities selector --}}
-    <div class="ui dropdown search selection dropdown" style="padding: 3px 25px;">
+    <div class="ui dropdown dropdown-tab2 search selection " style="padding: 3px 25px;">
             <input type="hidden" name="cities" style="height: 100%" id="selected_city">
             <i class="dropdown icon" style="position: absolute; "></i>
             <div class="default text">Toàn quốc</div>
@@ -32,43 +32,43 @@
                     const cities = result.map((data)=>{
                         return {value:String(data.place_id).padStart(2, '0'), text:data.name, name:data.place_name} 
                     })
-                    $('.ui.dropdown')
+                    $('.ui .dropdown-tab2')
                     .dropdown('setup menu',{values:cities})
                 }
         });   
-        $('.cities__fliter_item')?.each((index,item)=>{
+        $('.cities__fliter_item-tab2')?.each((index,item)=>{
             item.onclick =function (){
                 console.log([this.name])
-                $('.cities__fliter_item.active')[0]?.classList.remove('active')
+                $('.cities__fliter_item-tab2.active')[0]?.classList.remove('active')
                 this.classList.add("active")
-                $('.ui.dropdown')
+                $('.ui .dropdown-tab2')
                 .dropdown('set text',this.name=='all'?"Toàn quốc":this.name)
             }
         })
             /* select cities js */
-        const initalcitiesSelector = $('.ui.dropdown')
+        const initalcitiesSelectorTab2 = $('.ui .dropdown-tab2')
             .dropdown({
                 clearable: true,
                 placeholder: 'Chọn thành phố'
             })
      
-        const onCityChange = $(".ui.dropdown")
+        const onCityChangeTab2 = $(".ui .dropdown-tab2")
         .dropdown({
             onChange:function(place_id,place_name){
                 console.log({place_id,place_name})
                 $('input').blur();
                 if(place_id == '01'){
-                    $('.cities__fliter_item.active')[0]?.classList.remove('active')
-                    $('.cities__fliter_item')[1]?.classList.add('active')
+                    $('.cities__fliter_item-tab2.active')[0]?.classList.remove('active')
+                    $('.cities__fliter_item-tab2')[1]?.classList.add('active')
                     return ;
                 }
                 if(place_id == '02'){
-                    $('.cities__fliter_item.active')[0]?.classList.remove('active')
-                    $('.cities__fliter_item')[2]?.classList.add('active')
+                    $('.cities__fliter_item-tab2.active')[0]?.classList.remove('active')
+                    $('.cities__fliter_item-tab2')[2]?.classList.add('active')
                     return ;
 
                 }
-                $('.cities__fliter_item.active')[0]?.classList.remove('active')
+                $('.cities__fliter_item-tab2.active')[0]?.classList.remove('active')
             }})
                
     </script>
