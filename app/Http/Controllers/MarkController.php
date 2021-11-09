@@ -50,7 +50,7 @@ class MarkController extends Controller
             $marks = Mark::select($subjects)->where('khtn', $khtn)->get();
             foreach ($marks as $value) {
                 $sum = $value->{$subjects[0]}+$value->{$subjects[1]}+$value->{$subjects[2]};
-                $result[intval($sum)]++;
+                $result[round($sum)]++;
             }
             return response($result);
         }
@@ -105,7 +105,7 @@ class MarkController extends Controller
             ->take($count)
             ->get();
         foreach ($res as $value) {
-            $value->group = $groups[intval($maxGroup['group_id'])];
+            $value->group = $groups[round($maxGroup['group_id'])];
             $value->point = $point;
         }
         return $res;
@@ -153,7 +153,7 @@ class MarkController extends Controller
             $length = 10 / $delta + 1;
             $countArray = array_fill(0, $length, 0);
             foreach ($data as $value) {
-                $countArray[intval($value / $delta)]++;
+                $countArray[round($value / $delta)]++;
             }
         }
         return [$markArray, $countArray];
