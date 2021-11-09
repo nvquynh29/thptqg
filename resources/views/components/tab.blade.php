@@ -64,10 +64,10 @@
         <x-tab0/>
       </div>
         <div class="ui tab" data-tab="tab-1">
-        <h1>hello2</h1>
+         <x-tab1/>
       </div>
         <div class="ui tab" data-tab="tab-2">
-        <h1>hello3</h1>
+         <x-tab2/>
       </div>
     </div>
   </div>
@@ -76,31 +76,11 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js" integrity="sha512-dqw6X88iGgZlTsONxZK9ePmJEFrmHwpuMrsUChjAw1mRUhUITE5QU9pkcSox+ynfLhL15Sv2al5A0LVyDCmtUw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
 <script>
-  // const $ = document.querySelector.bind(document);
-    // const changeTab = (tabId)=>{
-    //   console.log(tabId)
-    // }
-    // const line = $(".tabs-items .line");
-    // const tabs= $(".tab-item")
-
-    // tabs.each((index,tab)=>{
-    //    tab.onclick = function () {
-    //     ($(".tab-item.active")[0].classList.remove("active"))
-    //     this.classList.add("active")
-    //     changeTab(index)
-    //   };
-    // })
-  // $.fn.api.settings.api = {
-  // 'get-mark' : '/mark/{sbd}',
-  // 'get-sugget'   : '/suggest',
-  // 'get-all-subject'      : '/phase-all-subject',
-  // 'get-phase-group'   : '/phase-group',
-  // 'get-phase'        : '/phase',
-  // 'get-top-ten'       : '/top-ten',
-  // };
+    const globalState = []
     $('.tabular.menu .tab-item').tab({
+    evaluateScripts : 'once',
     alwaysRefresh: true,
-    cache: true,
+    cache: false,
     apiSettings: {
       loadingDuration: 300,
       mockResponse: function(settings) {
