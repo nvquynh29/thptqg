@@ -80,13 +80,13 @@
     </div>  
     {{-- chon cum thi --}}
 
-    <div class="o-phodiem__form">
+    <div class="o-phodiem__form" style="display: block">
         <form action="" class="e-form">
             <div class="form-group">
                 <span class="label">Sắp xếp: </span>
                 <div class="value">
                     <a class="avg-item-tab0 avgbottom active" name="desc" href="javascript:;" >Thấp nhất</a>
-                    <a class="avg-item-tab0 avgtop" name="acs" href="javascript:;" >Cao nhất</a>
+                    <a class="avg-item-tab0 avgtop" name="asc" href="javascript:;" >Cao nhất</a>
                     
                 </div>
             </div>
@@ -120,20 +120,28 @@
     let marks = []
     $.ajax({
         type: "GET",
-        url: `api/top-ten`,
-        data: {"subject": "toan","desc":"asc"},
+        url: `api/top-ten-all`,
+        data: {"desc":"desc"},
         contentType: "application/json; charset=utf-8",
         dataType: "json",
         success: (result)=>{
-            console.log(result)
-            const chartStack  = $('#charts')
-            const containerCreator = `
-                 <div id="${'container-chart_of_'+ ''}" style="width: 100%;height: 100%;" ></div>
-            `
-            chartStack.append(containerCreator );
-            // if(result.length === 2){
-            //     renderChart(result[0],result[1],'chart-container')
-            // }
+            // console.log(result)
+          for (const key in result) {
+              if (Object.hasOwnProperty.call(result, key)) {
+                  const element = result[key];
+                    const chartStack  = $('#charts-tab0')
+                    const containerCreator = `
+                        <div id="${'tab0-container-chart_of_all_'+ key}" style="width: 100%;height: 100%;" ></div>
+                    `
+                    const xAxisData = element.data.data.map((item)=>item.place_name)
+                    const marks = element.data.data.map((item)=>item.mark)
+                    // console.log(data)
+                    chartStack.append(containerCreator );
+                renderBarChart(xAxisData,marks,
+                            `tab0-container-chart_of_all_${key}`,
+                            `10 địa phương có điểm trung bình môn ${element.name} thấp nhất`)
+              }
+          }
         }
     });
 
@@ -185,38 +193,114 @@
             });
         
     }
+    
+    function renderBarChart(xAxisData,marks,element,chartTitle) {
+            Highcharts.chart(element, {
+            chart: {
+                type: 'bar'
+            },
+            title: {
+                text: chartTitle,
+            },
+            subtitle: {
+                text: ''
+            },
+            xAxis: {
+                categories:xAxisData,
+                crosshair: true,
+                labels: {
+                        // rotation: -90,
+                    },
+                
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                text: 'Điểm'
+                }
+            },
+            tooltip: {
+                headerFormat: '<strong>{point.key} </strong> có điểm trung bình ',
+                pointFormat: '<tr><td style="color:black;padding:0"> <strong>{point.y}</strong>  </td>'+'</tr>',
+                footerFormat: '</table>',
+                shared: true,
+                useHTML: true
+            },
+            plotOptions: {
+                column: {
+                pointPadding: 0.2,
+                borderWidth: 0,
+                colors: ['#2f7ed8', '#0d233a', '#8bbc21', '#910000', '#1aadce',
+                    '#492970', '#f28f43', '#77a1e5', '#c42525', '#a6c96a']
+                }
+            },
+
+            series: [{
+                data:marks
+
+            }]
+            });
+        
+    }    
 
     const onFilterChangeTab0 = ()=>{
-        const currentSubject = $('.avg-item-tab0.active')[0].name
-        const currentDesc = $('.subject__fliter_item-tab0.active')[0].name
+        $('#charts-tab0').empty()
+        const currentDesc = $('.avg-item-tab0.active')[0].name
+        const currentSubject  = $('.subject__fliter_item-tab0.active')[0].name
         console.log({currentDesc,currentSubject})
+          if(currentSubject === 'all'){
+                $.ajax({
+                type: "GET",
+                url: `api/top-ten-all`,
+                data: {"desc":"desc"},
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: (result)=>{
+                    // console.log(result)
+                for (const key in result) {
+                    if (Object.hasOwnProperty.call(result, key)) {
+                        const element = result[key];
+                            const chartStack  = $('#charts-tab0')
+                            const containerCreator = `
+                                <div id="${'tab0-container-chart_of_all_'+ key}" style="width: 100%;height: 100%;" ></div>
+                            `
+                            const xAxisData = element.data.data.map((item)=>item.place_name)
+                            const marks = element.data.data.map((item)=>item.mark)
+                            // console.log(data)
+                            chartStack.append(containerCreator );
+                        renderBarChart(xAxisData,marks,
+                                    `tab0-container-chart_of_all_${key}`,
+                                    `10 địa phương có điểm trung bình môn ${element.name}  ${currentDesc!=='asc'? 'thấp nhất':'cao nhất'}`)
+                    }
+                }
+                }
+                });
+          }else{
+            $.ajax({
+            type: "GET",
+            url: `api/top-ten`,
+            data: {"subject":`${currentSubject}`,"desc":`${currentDesc}`},
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: (result)=>{
+                console.log(result)
+                const xAxisData = result.data.map((item)=>item.place_name)
+                const marks = result.data.map((item)=>item.mark)
+                const chartStack  = $('#charts-tab0')
+                const containerCreator = `
+                            <div id="${'tab0-container-chart_of_flitered_'+ result.name}" class="tab0-chart ${result.name}" style="width: 100%;height: 100%;" ></div>
+                        `  
+                chartStack.append(containerCreator );
+                renderBarChart(xAxisData,marks,
+                                    `tab0-container-chart_of_flitered_${result.name}`,
+                                    `10 địa phương có điểm trung bình môn ${result.name} ${currentDesc!=='asc'? 'thấp nhất':'cao nhất'}`)
+               
+                }
+            });
+          }
     }
             /* get all subject marks */
-        $.ajax({
-        type: "GET",
-        url: `api/phase-all-subject`,
-        data: {"place_id":"all"},
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        success: (result)=>{
-            console.log(result)
-            for (const key in result) {
-                if (Object.hasOwnProperty.call(result, key)) {
-                    const element = result[key];
-                    const chartStack  = $('#charts-tab0')
-
-                    const containerCreator = `
-                        <div id="${'tab0-container-chart_of_'+ key}" class="tab0-chart ${key}" style="width: 100%;height: 100%;" ></div>
-                    `                    
-                    // chartStack.append(containerCreator );
-                    //     renderChart(
-                    //         element.data[0],element.data[1],
-                    //         `tab0-container-chart_of_${key}`,
-                    //         `Phổ điểm môn ${element.name}`)
-                    }
-            }
-            }
-        });
+     
 
 </script>
 </div>

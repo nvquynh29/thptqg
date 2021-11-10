@@ -196,13 +196,16 @@ class MarkController extends Controller
         $subject = $request->input('subject');
         $desc = $request->input('desc');
         $marks = DB::table('marks')
-            ->select('marks.place_id', 'places.place_name', DB::raw("round(AVG($subject),2) as mark"))
+            ->select('marks.place_id', 'places.place_name', DB::raw("round(AVG($subject),5) as mark"))
             ->groupBy('marks.place_id', 'places.place_name')
             ->join('places', 'places.place_id', '=', 'marks.place_id')
             ->orderBy('mark', $desc)
             ->take(10)
             ->get();
-        return response($marks);
+        if ($subject !== 'all') {
+            $name = $this->getSubjectName($subject);
+        }
+        return response(['name' => $name, 'data' => $marks]);
     }
 
     public function topTenAll(Request $request)
