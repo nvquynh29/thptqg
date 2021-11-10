@@ -83,12 +83,12 @@
                             `tab1-container-chart_of_${key}`,
                             `Phổ điểm môn ${element[key].name}`)
                             $('.ui .dropdown-tab1')
-                    .dropdown('set selected','all')
+                            .dropdown('set selected','all')
                     $('#default-selected')[0].classList.add('active')
           });
             }
         });
-        
+        var allCities = []
         /* cities selector js */
         $.ajax({
                 type: "GET",
@@ -97,6 +97,8 @@
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
                 success: (result)=>{
+                    allCities = result
+                    localStorage.setItem('allCities', JSON.stringify(allCities));
                     const cities = result.map((data)=>{
                         return {value:String(data.place_id).padStart(2, '0'), text:data.name, name:data.place_name} 
                     })
@@ -105,14 +107,17 @@
                     $('.ui .dropdown-tab1')
                     .dropdown('setup menu',{values:cities})
                 }
-        });   
+        });  
+
         $('.cities__fliter_item-tab1')?.each((index,item)=>{
             item.onclick =function (){
+                 $('.ui .dropdown-tab1')
+                .dropdown('set selected',this.name)
                 $('.cities__fliter_item-tab1.active')[0]?.classList.remove('active')
                 this.classList.add("active")
-                $('.ui .dropdown-tab1')
-                .dropdown('set selected',this.name)
-                    onchangeState()
+               
+                
+                onchangeState()
 
             }
         })
@@ -122,7 +127,7 @@
                 clearable: true,
                 placeholder: 'Chọn thành phố'
             })
-     
+            
         const onCityChangeTab1 = $(".ui .dropdown-tab1")
         .dropdown({
             onChange:function(place_id,place_name){
@@ -149,7 +154,7 @@
             $('#charts-tab1').empty()
             let currentCities= $('.ui .dropdown-tab1')
                 .dropdown('get value')
-                if(!!currentCities){
+                if(!currentCities){
                     currentCities = 'all'
                 }
             const currentSubject = $('.subject__fliter_item-tab1.active')[0].name
@@ -193,7 +198,7 @@
                         }
                     }
             }); 
-                       
+           
                       
         }
     
