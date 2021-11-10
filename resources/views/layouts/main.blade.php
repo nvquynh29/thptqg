@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"  crossorigin="anonymous">
     {{-- jquery cdn --}}
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"
         integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
@@ -24,7 +25,9 @@
     body{
         font-family: Arial, Helvetica, sans-serif;
     }
-
+    a:hover{
+        color: #B75C00 !important;
+    }
     .highcharts-legend {
         display: none;
     }
@@ -305,7 +308,7 @@
                         <a href="/">ĐIỂM THI TỐT NGHIỆP THPT</a>
                     </li>
                     <li class="navigation__item">
-                        <a href="/tra-cuu-dai-hoc">tra cứu đại học</a>
+                        <a href="/tracuu">TRA CỨU ĐIỂM THI THPTQG</a>
                     </li>
 
                 </ul>
