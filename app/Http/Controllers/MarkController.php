@@ -61,9 +61,16 @@ class MarkController extends Controller
         $record = Mark::where('sbd', $sbd)->first();
         $place = Place::where('place_id', $record->place_id)->first();
         $record->place = $place->place_name;
+        $result = [];
         if ($record) {
+            foreach ($record as $key => $value) {
+                if (isset($value)) {
+                    $name = $this->getSubjectName($key);
+                    $result[] = ['name' => $name, 'mark' => $value];
+                }
+            }
             $suggest = $this->suggest($record, 0, 30);
-            return response()->json(['data' => $record, 'suggest' => $suggest]);
+            return response()->json(['data' => $result, 'suggest' => $suggest]);
         }
         return response('Not found', 404);
     }
@@ -105,7 +112,7 @@ class MarkController extends Controller
             ->take($count)
             ->get();
         foreach ($res as $value) {
-            $value->group = $groups[round($maxGroup['group_id'])];
+            $value->group = $groups[intval($maxGroup['group_id'])];
             $value->point = $point;
         }
         return $res;

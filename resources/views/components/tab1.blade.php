@@ -88,7 +88,7 @@
           });
             }
         });
-        
+        var allCities = []
         /* cities selector js */
         $.ajax({
                 type: "GET",
@@ -97,6 +97,8 @@
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
                 success: (result)=>{
+                    allCities = result
+                    localStorage.setItem('allCities', JSON.stringify(allCities));
                     const cities = result.map((data)=>{
                         return {value:String(data.place_id).padStart(2, '0'), text:data.name, name:data.place_name} 
                     })
@@ -105,10 +107,10 @@
                     $('.ui .dropdown-tab1')
                     .dropdown('setup menu',{values:cities})
                 }
-        });   
+        });  
+
         $('.cities__fliter_item-tab1')?.each((index,item)=>{
             item.onclick =function (){
-                console.log([this.name])
                  $('.ui .dropdown-tab1')
                 .dropdown('set selected',this.name)
                 $('.cities__fliter_item-tab1.active')[0]?.classList.remove('active')

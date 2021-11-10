@@ -125,7 +125,6 @@
         contentType: "application/json; charset=utf-8",
         dataType: "json",
         success: (result)=>{
-            // console.log(result)
           for (const key in result) {
               if (Object.hasOwnProperty.call(result, key)) {
                   const element = result[key];
@@ -135,7 +134,6 @@
                     `
                     const xAxisData = element.data.data.map((item)=>item.place_name)
                     const marks = element.data.data.map((item)=>item.mark)
-                    // console.log(data)
                     chartStack.append(containerCreator );
                 renderBarChart(xAxisData,marks,
                             `tab0-container-chart_of_all_${key}`,
@@ -247,7 +245,6 @@
         $('#charts-tab0').empty()
         const currentDesc = $('.avg-item-tab0.active')[0].name
         const currentSubject  = $('.subject__fliter_item-tab0.active')[0].name
-        console.log({currentDesc,currentSubject})
           if(currentSubject === 'all'){
                 $.ajax({
                 type: "GET",
@@ -256,7 +253,6 @@
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
                 success: (result)=>{
-                    // console.log(result)
                 for (const key in result) {
                     if (Object.hasOwnProperty.call(result, key)) {
                         const element = result[key];
@@ -266,7 +262,6 @@
                             `
                             const xAxisData = element.data.data.map((item)=>item.place_name)
                             const marks = element.data.data.map((item)=>item.mark)
-                            // console.log(data)
                             chartStack.append(containerCreator );
                         renderBarChart(xAxisData,marks,
                                     `tab0-container-chart_of_all_${key}`,
@@ -283,7 +278,6 @@
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             success: (result)=>{
-                console.log(result)
                 const xAxisData = result.data.map((item)=>item.place_name)
                 const marks = result.data.map((item)=>item.mark)
                 const chartStack  = $('#charts-tab0')
