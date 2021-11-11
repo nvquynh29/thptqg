@@ -42,7 +42,7 @@ class MarkController extends Controller
     public function phaseByGroup(Request $request)
     {
         // $result[i] => count(x), i - 1 < x <= i
-        $result = array_fill(1, 30, 0);
+        $result = array_fill(0, 31, 0);
         $group = $request->input('group');
         if (isset($group)) {
             $subjects = $this->getSubjectsByGroup($group);
@@ -103,7 +103,7 @@ class MarkController extends Controller
         $maxGroup = $this->getMaxGroup($record, $khtn);
         $point = round($maxGroup['point'], 2);
         $res = DB::table('major_group')
-            ->select('majors.major_code', 'majors.major_name', 'universities.uni_name', 'standard_point',
+            ->select('majors.*', 'majors.*', 'universities.uni_name', 'standard_point',
                 DB::raw("round(($point - standard_point),2) as delta"))
             ->where('group_id', '=', $maxGroup['group_id'])
             ->join('majors', 'majors.id', '=', 'major_group.major_id')
@@ -113,6 +113,17 @@ class MarkController extends Controller
             ->offset($start)
             ->take($count)
             ->get();
+        // $res = DB::table('major_group')
+        //     ->select('majors.major_code', 'majors.major_name', 'universities.uni_name', 'standard_point',
+        //         DB::raw("round(($point - standard_point),2) as delta"))
+        //     ->where('group_id', '=', $maxGroup['group_id'])
+        //     ->join('majors', 'majors.id', '=', 'major_group.major_id')
+        //     ->join('universities', 'majors.uni_code', '=', 'universities.uni_code')
+        //     ->havingRaw('delta <= ?', [3])
+        //     ->orderBy('delta', 'desc')
+        //     ->offset($start)
+        //     ->take($count)
+        //     ->get();
         foreach ($res as $value) {
             $value->group = $groups[intval($maxGroup['group_id'])];
             $value->point = $point;
@@ -208,7 +219,7 @@ class MarkController extends Controller
         $subject = $request->input('subject');
         $desc = $request->input('desc');
         $marks = DB::table('marks')
-            ->select('marks.place_id', 'places.place_name', DB::raw("round(AVG($subject),5) as mark"))
+            ->select('marks.*', 'places.*', DB::raw("round(AVG($subject),5) as mark"))
             ->groupBy('marks.place_id', 'places.place_name')
             ->join('places', 'places.place_id', '=', 'marks.place_id')
             ->orderBy('mark', $desc)
