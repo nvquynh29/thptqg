@@ -60,17 +60,19 @@ class MarkController extends Controller
     {
         $record = Mark::where('sbd', $sbd)->first();
         $place = Place::where('place_id', $record->place_id)->first();
-        $record->place = $place->place_name;
-        $result = [];
+        $marks = [];
+
         if ($record) {
-            foreach ($record as $key => $value) {
-                if (isset($value)) {
-                    $name = $this->getSubjectName($key);
-                    $result[] = ['name' => $name, 'mark' => $value];
+            $data = $record->toArray();
+            foreach ($data as $key => $value) {
+                $name = $this->getSubjectName($key);
+                if (isset($name) && isset($value)) {
+                    $marks[] = ['name' => $name, 'mark' => $value];
                 }
             }
+            $record->place = $place->place_name;
             $suggest = $this->suggest($record, 0, 30);
-            return response()->json(['data' => $result, 'suggest' => $suggest]);
+            return response()->json(['data' => $record, 'suggest' => $suggest, 'marks' => $marks]);
         }
         return response('Not found', 404);
     }
@@ -183,7 +185,10 @@ class MarkController extends Controller
             'dia'       => 'Địa lý',
             'gdcd'      => 'Giáo dục công dân',
         ];
-        return $subjectNames[$code];
+        if (array_key_exists($code, $subjectNames)) {
+            return $subjectNames[$code];
+        }
+        return null;
     }
 
     public function phaseAllSubject(Request $request)
