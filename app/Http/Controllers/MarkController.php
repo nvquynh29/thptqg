@@ -43,7 +43,7 @@ class MarkController extends Controller
     {
         // $result[i] => count(x), i - 1 < x <= i
         $result = array_fill(1, 30, 0);
-        $group = $request->query('group');
+        $group = $request->input('group');
         if (isset($group)) {
             $subjects = $this->getSubjectsByGroup($group);
             $khtn = $group == 'A' || $group == 'A1' || $group == 'B';
@@ -60,10 +60,19 @@ class MarkController extends Controller
     {
         $record = Mark::where('sbd', $sbd)->first();
         $place = Place::where('place_id', $record->place_id)->first();
-        $record->place = $place->place_name;
+        $marks = [];
+
         if ($record) {
+            $data = $record->toArray();
+            foreach ($data as $key => $value) {
+                $name = $this->getSubjectName($key);
+                if (isset($name) && isset($value)) {
+                    $marks[] = ['name' => $name, 'mark' => $value];
+                }
+            }
+            $record->place = $place->place_name;
             $suggest = $this->suggest($record, 0, 30);
-            return response()->json(['data' => $record, 'suggest' => $suggest]);
+            return response()->json(['data' => $record, 'suggest' => $suggest, 'marks' => $marks]);
         }
         return response('Not found', 404);
     }
@@ -105,7 +114,7 @@ class MarkController extends Controller
             ->take($count)
             ->get();
         foreach ($res as $value) {
-            $value->group = $groups[round($maxGroup['group_id'])];
+            $value->group = $groups[intval($maxGroup['group_id'])];
             $value->point = $point;
         }
         return $res;
@@ -117,8 +126,8 @@ class MarkController extends Controller
         $start = 0;
         $count = 30;
         if ($request->has('start') && $request->has('count')) {
-            $start = $request->query('start');
-            $count = $request->query('count');
+            $start = $request->input('start');
+            $count = $request->input('count');
         }
         $record = Mark::where('sbd', $request->sbd)->first();
         return $this->suggest($record, $start, $count);
@@ -126,17 +135,21 @@ class MarkController extends Controller
 
     public function phase(Request $request)
     {
-        $placeId = $request->query('place_id');
+        $placeId = $request->input('place_id');
         $subject = $request->input('subject');
         $filter = null;
         if (isset($placeId) && isset($subject)) {
             $filter = DB::table('marks');
-            if ($placeId == 'all') {
-                $filter = $filter->whereNotNull($subject)->pluck($subject);
+            if ($subject == 'all') {
+                return $this->phaseAllSubject($request);
             } else {
-                $filter = $filter->where('place_id', $placeId)->whereNotNull($subject)->pluck($subject);
+                if ($placeId == 'all') {
+                    $filter = $filter->whereNotNull($subject)->pluck($subject);
+                } else {
+                    $filter = $filter->where('place_id', $placeId)->whereNotNull($subject)->pluck($subject);
+                }
+                return $this->phaseBySubject($filter, $subject);
             }
-            return $this->phaseBySubject($filter, $subject);
         }
         return response('All input is required', 400);
     }
@@ -156,7 +169,7 @@ class MarkController extends Controller
                 $countArray[round($value / $delta)]++;
             }
         }
-        return [$markArray, $countArray];
+        return response()->json([$subject => ['data' => [$markArray, $countArray], 'name' => $this->getSubjectName($subject)]]);
     }
 
     private function getSubjectName($code)
@@ -172,7 +185,10 @@ class MarkController extends Controller
             'dia'       => 'Địa lý',
             'gdcd'      => 'Giáo dục công dân',
         ];
-        return $subjectNames[$code];
+        if (array_key_exists($code, $subjectNames)) {
+            return $subjectNames[$code];
+        }
+        return null;
     }
 
     public function phaseAllSubject(Request $request)
@@ -182,24 +198,26 @@ class MarkController extends Controller
         $data = [];
         for ($i = 0; $i < $length; $i++) {
             $request->merge(['subject' => $subjects[$i]]);
-            $name = $this->getSubjectName($subjects[$i]);
-            $data[$subjects[$i]] = ['data' => $this->phase($request), 'name' => $name];
+            $data[] = $this->phase($request)->original;
         }
-        return response()->json($data);
+        return $data;
     }
 
     public function topTen(Request $request)
     {
-        $subject = $request->query('subject');
-        $desc = $request->query('desc');
+        $subject = $request->input('subject');
+        $desc = $request->input('desc');
         $marks = DB::table('marks')
-            ->select('marks.place_id', 'places.place_name', DB::raw("round(AVG($subject),2) as mark"))
+            ->select('marks.place_id', 'places.place_name', DB::raw("round(AVG($subject),5) as mark"))
             ->groupBy('marks.place_id', 'places.place_name')
             ->join('places', 'places.place_id', '=', 'marks.place_id')
             ->orderBy('mark', $desc)
             ->take(10)
             ->get();
-        return response($marks);
+        if ($subject !== 'all') {
+            $name = $this->getSubjectName($subject);
+        }
+        return response(['name' => $name, 'data' => $marks]);
     }
 
     public function topTenAll(Request $request)
