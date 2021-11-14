@@ -288,25 +288,25 @@ class MarkController extends Controller
                 ->join('majors', 'majors.id', '=', 'major_group.major_id')
                 ->join('universities', 'majors.uni_code', '=', 'universities.uni_code')
                 ->where('universities.uni_code', '=', $uni)
-                ->where('majors.major_code', '=', $major);
-            if (isset($group_id) && $group_id != 'all') {
-                $filter->where('major_group.group_id', '=', $group_id);
-            }
-            $data = $filter->orWhere('universities.uni_name', 'like', "%$uni%")
-                ->orWhere('majors.major_name', 'like', "%$major%")
+                ->where(function ($query) use ($major, $uni) {
+                    $query->where('majors.major_code', '=', $major)
+                        ->orWhere('universities.uni_name', 'like', "%$uni%")
+                        ->orWhere('majors.major_name', 'like', "%$major%");
+                });
+            $data = $filter
                 ->offset($start)
                 ->take($count)
                 ->get();
+            $result = [];
             foreach ($data as $value) {
                 $point = $this->getPoint($sbd, $value->group);
-                $value->delta = round($point - $value->standard_point, 2);
-                $value->point = $point;
+                if ($point) {
+                    $value->point = $point;
+                    $value->delta = round($point - $value->standard_point, 2);
+                    $result[] = $value;
+                }
             }
-            $remove = $data->filter(function ($value, $key) {
-                return $value->point != null;
-            });
-            $remove->all();
-            return $remove;
+            return $result;
         }
         return response('All input is require', 400);
     }

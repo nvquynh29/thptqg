@@ -424,7 +424,7 @@
         </div>
     </div>
     <div class="loading">
-        
+
     </div>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"
         integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous">
@@ -511,8 +511,8 @@
 
             diem_thi.forEach(diem => {
                 row_bang_diem_thi += `
-                                    <tr style="border:1px solid #888888">
-                                        <td style="border-right:1px solid #888888">${diem.name}</td>
+                                    <tr >
+                                        <td >${diem.name}</td>
                                         <td>${diem.mark}</td>
                                     </tr>
                                     `
