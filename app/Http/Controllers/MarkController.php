@@ -286,13 +286,19 @@ class MarkController extends Controller
                 ->select('majors.major_code', 'majors.major_name', 'universities.uni_name', 'groups.name as group', 'standard_point')
                 ->join('groups', 'groups.id', '=', 'major_group.group_id')
                 ->join('majors', 'majors.id', '=', 'major_group.major_id')
-                ->join('universities', 'majors.uni_code', '=', 'universities.uni_code')
-                ->where('universities.uni_code', '=', $uni)
-                ->where(function ($query) use ($major, $uni) {
+                ->join('universities', 'majors.uni_code', '=', 'universities.uni_code');
+            if ($uni != '') {
+                $filter->where('universities.uni_code', '=', $uni);
+            }
+            if ($major != '') {
+                $filter->where(function ($query) use ($major, $uni) {
                     $query->where('majors.major_code', '=', $major)
-                        ->orWhere('universities.uni_name', 'like', "%$uni%")
-                        ->orWhere('majors.major_name', 'like', "%$major%");
+                        ->orWhere('majors.major_name', 'LIKE', "%$major%");
+                    if ($uni != '') {
+                        $query->orWhere('universities.uni_name', 'LIKE', "%$uni%");
+                    }
                 });
+            }
             $data = $filter
                 ->offset($start)
                 ->take($count)

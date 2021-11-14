@@ -437,7 +437,10 @@
         var thongTinTraCuu;
 
         function showToast(messages,duration) {
-            $("#toastId .toast").attr(`data-delay="${duration}"`)
+            $("#toastId .toast").attr('data-delay',duration)
+            setTimeout(() => {
+            $("#toastId .toast").removeAttr('data-delay')
+            }, duration);
             $('#errorMes').text(messages)
             $("#toastId")[0].classList.remove("hidden");
             $(".toast").toast("show");
