@@ -23,3 +23,4 @@ Route::get('/phase', [MarkController::class, 'phase']);
 Route::get('/top-ten', [MarkController::class, 'topTen']);
 Route::get('/top-ten-all', [MarkController::class, 'topTenAll']);
 Route::get('/places', [PlaceController::class, 'index']);
+Route::get('/major', [MarkController::class, 'searchMajor']);
