@@ -152,46 +152,40 @@ class MarkController extends Controller
     {
         $placeId = $request->input('place_id');
         $subject = $request->input('subject');
-        $delta = $this->getDeltaBySubject($subject);
+        $filter = null;
         if (isset($placeId) && isset($subject)) {
+            $filter = DB::table('marks');
             if ($subject == 'all') {
                 return $this->phaseAllSubject($request);
+            } else {
+                if ($placeId == 'all') {
+                    $filter = $filter->whereNotNull($subject)->pluck($subject);
+                } else {
+                    $filter = $filter->where('place_id', $placeId)->whereNotNull($subject)->pluck($subject);
+                }
+                return $this->phaseBySubject($filter, $subject);
             }
-            $filter = DB::table('marks');
-            $markArray = [];
-            $countArray = [];
-            if ($placeId != 'all') {
-                $filter->where('place_id', $placeId);
-            }
-            for ($mark = 0; $mark <= 10; $mark += $delta) {
-                $markArray[] = round($mark, 2);
-                $countArray[] = $filter->where($subject, $mark)->count();
-            }
-            return response()->json([$subject => ['data' => [$markArray, $countArray], 'name' => $this->getSubjectName($subject)]]);
         }
         return response('All input is required', 400);
     }
 
-    // public function phaseBySubject($data, $subject)
-    // {
-    //     $markArray = [];
-    //     $countArray = [];
-    //     $delta = $this->getDeltaBySubject($subject);
-    //     if ($delta) {
-    //         for ($mark = 0; $mark <= 10; $mark += $delta) {
-    //             $markArray[] = round($mark, 2);
-    //         }
-    //         $length = 10 / $delta + 1;
-    //         $countArray = array_fill(0, $length, 0);
-    //         foreach ($data as $value) {
-    //             if (isset($value)) {
-    //                 $countArray[round($value / $delta)]++;
-    //             }
-    //         }
-    //     }
-    //     return response()->json([$subject => ['data' => [$markArray, $countArray], 'name' => $this->getSubjectName($subject)]]);
-    // }
-
+    public function phaseBySubject($data, $subject)
+    {
+        $markArray = [];
+        $countArray = [];
+        $delta = $this->getDeltaBySubject($subject);
+        if ($delta) {
+            for ($mark = 0; $mark <= 10; $mark += $delta) {
+                $markArray[] = round($mark, 2);
+            }
+            $length = 10 / $delta + 1;
+            $countArray = array_fill(0, $length, 0);
+            foreach ($data as $value) {
+                $countArray[round($value / $delta)]++;
+            }
+        }
+        return response()->json([$subject => ['data' => [$markArray, $countArray], 'name' => $this->getSubjectName($subject)]]);
+    }
     private function getSubjectName($code)
     {
         $subjectNames = [
@@ -294,7 +288,7 @@ class MarkController extends Controller
                 ->join('groups', 'groups.id', '=', 'major_group.group_id')
                 ->join('majors', 'majors.id', '=', 'major_group.major_id')
                 ->join('universities', 'majors.uni_code', '=', 'universities.uni_code');
-            if ($uni != '') {
+            if ($uni != 'all') {
                 $filter->where('universities.uni_code', '=', $uni);
             }
             if ($group_id != 'all') {

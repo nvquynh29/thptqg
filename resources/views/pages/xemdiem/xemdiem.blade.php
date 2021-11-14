@@ -414,7 +414,7 @@
                         <table class="table table-striped">
                             <caption style="text-align: center;outline:none">
                                 <button class="btn primary" id="loadMoreSuggest" style="margin: 0 auto;box-shadow: none"  onclick="loadMore(true)">Xem thêm</button>
-                                 <button class="btn primary" id="loadMoreSearch" style="margin: 0 auto;box-shadow: none" onclick="loadByFilter()">Xem thêm</button>
+                                 <button class="btn primary hidden" id="loadMoreSearch" style="margin: 0 auto;box-shadow: none" onclick="loadByFilter()">Xem thêm</button>
                             </caption>
                             <thead class="thead-dark">
                                 <tr>
@@ -563,6 +563,9 @@
                 dataType: "json",
                 success: (result) => {
                     if(result.length <= 0){
+                    // emptySuggest()
+                    // $('#loadMoreSearch').hide()
+                        
                       return showToast('Không có dữ liệu phù hợp với lựa chọn của bạn!',2000)
                     }
                     emptySuggest()
@@ -625,6 +628,7 @@
                 dataType: "json",
                 success: (result) => {
                     if(result.length <= 0 ){
+                        // showToast('Không tìm thấy kết quả',1000)
                         $(`${isSuggest?'#loadMoreSuggest':'#loadMoreSearch'}`).hide()
                     }
                     console.log(result);
@@ -640,7 +644,7 @@
                 contentType: "application/json; charset=utf-8",
                 dataType:'json',
                 success:function(result){
-                    console.log(result)
+                    // console.log(result)
                     const universities = result.map((data)=>{
                         return {value:String(data.uni_code), text:`${data.uni_code} - ${data.uni_name}`, name:`${data.uni_code} - ${data.uni_name}`} 
                     })
