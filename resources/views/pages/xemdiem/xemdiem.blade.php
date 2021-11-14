@@ -1,5 +1,6 @@
 @extends('layouts.main')
 @section('body')
+
     <style>
         a{
             text-decoration: none !important;
@@ -362,18 +363,31 @@
                     </div>
                     <div class="o-suggest-nganh__form">
                         <form class="e-form" action="">
+
+                            <div class="ui dropdown" style="padding: 8px;border: 1px solid #dddcdc;border-radius: 2px;">
+                            <input type="hidden" name="gender">
+                            <i class="dropdown icon"></i>
+                            <div class="default text">Gender</div>
+                            <div class="menu">
+                                <div class="item" data-value="male">Male</div>
+                                <div class="item" data-value="female">Female</div>
+                            </div>
+                            </div>
+                            {{-- tim truong --}}
                             <div class="form-group">
                                 <span class="label">Tìm trường</span>
                                 <input type="text" class="form-control" id="input_college" placeholder="Tên trường, mã trường"
                                     autocomplete="off" />
                                 <div class="autocomplete-box" id="autocomplete-box"></div>
                             </div>
+                            {{-- tim nganh --}}
                             <div class="form-group">
                                 <span class="label">Tìm ngành</span>
                                 <input type="text" class="form-control" id="ten_nganh" placeholder="Tên ngành, mã ngành"
                                     autocomplete="off" />
                                 <div class="autocomplete-box" id="autocomplete-box"></div>
                             </div>
+                            {{-- tim khoi --}}
                             <div class="form-group">
                                 <span class="label">Khối</span>
                                 <select name="slblock" id="slblock">
@@ -432,6 +446,8 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
         integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous">
     </script>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
 
     <script>
         var thongTinTraCuu;
@@ -602,6 +618,8 @@
         //         `<option id="${element.id}city" value="${element.place_id}">${element.place_name}</option>`;
         //     $("#sllocation").append(child);
         // });
+        $('.ui.dropdown')
+        .dropdown()
         
     </script>
 @endsection
