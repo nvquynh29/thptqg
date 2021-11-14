@@ -6,8 +6,9 @@ use App\Models\Group;
 use App\Models\Mark;
 use App\Models\Place;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+
 class MarkController extends Controller
 {
     private function getDeltaBySubject($subject)
@@ -60,20 +61,22 @@ class MarkController extends Controller
     public function show($sbd)
     {
         $record = Mark::where('sbd', $sbd)->first();
-        $place = Place::where('place_id', $record->place_id)->first();
-        $marks = [];
+        if (isset($record)) {
+            $place = Place::where('place_id', $record->place_id)->first();
+            $marks = [];
 
-        if ($record) {
-            $data = $record->toArray();
-            foreach ($data as $key => $value) {
-                $name = $this->getSubjectName($key);
-                if (isset($name) && isset($value)) {
-                    $marks[] = ['name' => $name, 'mark' => $value];
+            if ($record) {
+                $data = $record->toArray();
+                foreach ($data as $key => $value) {
+                    $name = $this->getSubjectName($key);
+                    if (isset($name) && isset($value)) {
+                        $marks[] = ['name' => $name, 'mark' => $value];
+                    }
                 }
+                $record->place = $place->place_name;
+                $suggest = $this->suggest($record, 0, 20);
+                return response()->json(['data' => $record, 'suggest' => $suggest, 'marks' => $marks]);
             }
-            $record->place = $place->place_name;
-            $suggest = $this->suggest($record, 0, 20);
-            return response()->json(['data' => $record, 'suggest' => $suggest, 'marks' => $marks]);
         }
         return response('Not found', 404);
     }
@@ -139,7 +142,10 @@ class MarkController extends Controller
             $count = $request->input('count');
         }
         $record = Mark::where('sbd', $request->sbd)->first();
-        return $this->suggest($record, $start, $count);
+        if (isset($record)) {
+            return $this->suggest($record, $start, $count);
+        }
+        return response('Not found', 404);
     }
 
     public function phase(Request $request)
@@ -150,8 +156,7 @@ class MarkController extends Controller
         if (isset($placeId) && isset($subject)) {
             $markArray = [];
             $countArray = [];
-            for ($mark = 0; $mark <= 10; $mark += $delta) 
-            {
+            for ($mark = 0; $mark <= 10; $mark += $delta) {
                 $markArray[] = round($mark, 2);
                 $countArray[] = Mark::where($subject, $mark)->count();
             }
@@ -227,20 +232,6 @@ class MarkController extends Controller
             }
         }
         return response('All input is require', 400);
-
-        // $subject = $request->input('subject');
-        // $desc = $request->input('desc');
-        // $marks = DB::table('marks')
-        //     ->select('marks.place_id', 'places.place_name', DB::raw("round(AVG($subject),5) as mark"))
-        //     ->groupBy('marks.place_id', 'places.place_name')
-        //     ->join('places', 'places.place_id', '=', 'marks.place_id')
-        //     ->orderBy('mark', $desc)
-        //     ->take(10)
-        //     ->get();
-        // if ($subject !== 'all') {
-        //     $name = $this->getSubjectName($subject);
-        // }
-        // return response(['name' => $name, 'data' => $marks]);
     }
 
     public function topTenAll(Request $request)
@@ -269,15 +260,17 @@ class MarkController extends Controller
     {
         $subjects = $this->getSubjectsByGroup($group);
         $marks = Mark::select($subjects)->where('sbd', $sbd)->first();
-        $point = 0;
-        for ($i = 0; $i < 3; $i++)
-        {
-            if (!isset($marks->{$subjects[$i]})) {
-                return null;
+        if (isset($marks)) {
+            $point = 0;
+            for ($i = 0; $i < 3; $i++) {
+                if (!isset($marks->{$subjects[$i]})) {
+                    return null;
+                }
+                $point += $marks->{$subjects[$i]};
             }
-            $point += $marks->{$subjects[$i]};
+            return round($point, 2);
         }
-        return round($point, 2);
+        return response('Not found', 404);
     }
 
     public function searchMajor(Request $request)
@@ -290,28 +283,30 @@ class MarkController extends Controller
         $count = $request->has('count') ? $request->input('count') : 20;
         if (isset($group_id) || isset($major) || isset($uni)) {
             $filter = DB::table('major_group')
-            ->select('majors.major_code', 'majors.major_name', 'universities.uni_name', 'groups.name as group' ,'standard_point')
-            ->join('groups', 'groups.id', '=', 'major_group.group_id')
-            ->join('majors', 'majors.id', '=', 'major_group.major_id')
-            ->join('universities', 'majors.uni_code', '=', 'universities.uni_code')
-            ->where('universities.uni_code', '=', $uni)
-            ->where('majors.major_code', '=', $major);
-            if (isset($group_id) && $group_id != 'all')
-            {
-                $filter->where('major_group.group_id', '=', $group_id);
-            }
-            $data = $filter->orWhere('universities.uni_name', 'like', "%$uni%")
-                ->orWhere('majors.major_name', 'like', "%$major%")
+                ->select('majors.major_code', 'majors.major_name', 'universities.uni_name', 'groups.name as group', 'standard_point')
+                ->join('groups', 'groups.id', '=', 'major_group.group_id')
+                ->join('majors', 'majors.id', '=', 'major_group.major_id')
+                ->join('universities', 'majors.uni_code', '=', 'universities.uni_code')
+                ->where('universities.uni_code', '=', $uni)
+                ->where(function ($query) use ($major, $uni) {
+                    $query->where('majors.major_code', '=', $major)
+                        ->orWhere('universities.uni_name', 'like', "%$uni%")
+                        ->orWhere('majors.major_name', 'like', "%$major%");
+                });
+            $data = $filter
                 ->offset($start)
                 ->take($count)
                 ->get();
-                foreach ($data as $value)
-                {
-                    $point = $this->getPoint($sbd, $value->group);
-                    $value->delta = round($point - $value->standard_point, 2);
+            $result = [];
+            foreach ($data as $value) {
+                $point = $this->getPoint($sbd, $value->group);
+                if ($point) {
                     $value->point = $point;
+                    $value->delta = round($point - $value->standard_point, 2);
+                    $result[] = $value;
                 }
-            return $data;
+            }
+            return $result;
         }
         return response('All input is require', 400);
     }
