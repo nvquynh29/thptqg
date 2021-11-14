@@ -297,7 +297,7 @@ class MarkController extends Controller
             if ($uni != '') {
                 $filter->where('universities.uni_code', '=', $uni);
             }
-            if ($group_id != '') {
+            if ($group_id != 'all') {
                 $filter->where('major_group.group_id', '=', $group_id);
             }
             if ($major != '') {

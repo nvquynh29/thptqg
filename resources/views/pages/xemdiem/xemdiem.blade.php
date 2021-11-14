@@ -142,7 +142,7 @@
             -webkit-box-pack: justify;
             -webkit-justify-content: space-between;
             -ms-flex-pack: justify;
-            justify-content: space-between;
+            justify-content: space-evenly;
         }
 
         .o-suggest-nganh__form .form-group {
@@ -285,6 +285,7 @@
                             <button class="btn btn--search search_submit" onclick="search()">
                                 Tìm kiếm
                             </button>
+                            
                         </div>
                     </div>
                     <div
@@ -364,21 +365,16 @@
                     <div class="o-suggest-nganh__form">
                         <form class="e-form" action="">
 
-                            <div class="ui dropdown" style="padding: 8px;border: 1px solid #dddcdc;border-radius: 2px;">
-                            <input type="hidden" name="gender">
-                            <i class="dropdown icon"></i>
-                            <div class="default text">Gender</div>
-                            <div class="menu">
-                                <div class="item" data-value="male">Male</div>
-                                <div class="item" data-value="female">Female</div>
-                            </div>
-                            </div>
                             {{-- tim truong --}}
-                            <div class="form-group">
+                            <div class="form-group" style="width: 40%">
                                 <span class="label">Tìm trường</span>
-                                <input type="text" class="form-control" id="input_college" placeholder="Tên trường, mã trường"
-                                    autocomplete="off" />
-                                <div class="autocomplete-box" id="autocomplete-box"></div>
+                                    <div class="ui dropdown search selection" style="border: 1px solid #dddcdc;border-radius: 2px; width:100%; max-height :200px; over-flow:auto">
+                                    <input type="hidden" name="gender">
+                                    <i class="dropdown icon"></i>
+                                    <div class="default text">Trường</div>
+                                    <div class="menu" id="input_college" >
+                                    </div>
+                                    </div>
                             </div>
                             {{-- tim nganh --}}
                             <div class="form-group">
@@ -402,9 +398,13 @@
                            
 
                             <div class="form-group">
-                                <button type="button" id="showMoreBtn" style="margin: 0 10px" class="btn btnFilter" onclick="filter()">
-                                    Tìm kiếm
+                                <button type="button" style="margin: 0 10px" class="btn btnFilter" onclick="filter()">
+                                    Tìm kiếm theo bộ lọc
                                 </button>
+                                 <button type="button"  style="margin: 0 10px" class="btn btnFilter" onclick="autoSuggest()">
+                                    Lọc tự động dựa trên điểm của bạn
+                                </button>
+                                
                             </div>
                         </form>
                     </div>
@@ -413,7 +413,8 @@
                     <div class="table-responsive" style="padding-top: 20px">
                         <table class="table table-striped">
                             <caption style="text-align: center;outline:none">
-                                <button class="btn primary" style="margin: 0 auto;box-shadow: none" onclick="loadMore()">Xem thêm</button>
+                                <button class="btn primary" id="loadMoreSuggest" style="margin: 0 auto;box-shadow: none"  onclick="loadMore(true)">Xem thêm</button>
+                                 <button class="btn primary" id="loadMoreSearch" style="margin: 0 auto;box-shadow: none" onclick="loadByFilter()">Xem thêm</button>
                             </caption>
                             <thead class="thead-dark">
                                 <tr>
@@ -440,14 +441,14 @@
     <div class="loading">
 
     </div>
+
+
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"
         integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous">
     </script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
         integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous">
     </script>
-    <script src="https://code.jquery.com/jquery-3.1.1.min.js" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
 
     <script>
         var thongTinTraCuu;
@@ -545,7 +546,11 @@
 
         
         function filter(){
-            const uni = $('#input_college')[0].value
+            // const uni = $('#input_college')[0].value
+            $('#loadMoreSuggest').hide()
+            $('#loadMoreSearch').show()
+            const uni=  $('.ui.dropdown')
+            .dropdown('get value')
             const major = $('#ten_nganh')[0].value
             const group_id = $('#slblock')[0].value
             const currentSbd = $('#so_bao_danh')[0].textContent
@@ -593,24 +598,60 @@
                     });
                     goi_y_body.append(row_bang_goi_y)
         }
-        function loadMore(){
-            const currentTableIndex = $('#bang_goi_y tr').last()[0].rowIndex
+        function autoSuggest(){
+            $('#loadMoreSearch').hide()
+            $('#loadMoreSuggest').show()
+            emptySuggest()
+            loadMore(true)
+        }
+        function loadByFilter() {
+            loadMore(false)
+            
+        }
+        function loadMore(isSuggest){
+            const group_id = $('#slblock')[0].value
+            const uni=  $('.ui.dropdown')
+            .dropdown('get value')
+            const currentTableIndex = $('#bang_goi_y tr').last()[0]?.rowIndex??0
             const currentSbd = $('#so_bao_danh')[0].textContent
+            const major = $('#ten_nganh')[0].value
+            const loadMoreSuggestQuery = {"sbd":`${currentSbd}`,"group_id":`${group_id}`,"start":`${currentTableIndex}`,"count":"20"}
+            const loadByFilterQuery = {"sbd":`${currentSbd}`,"uni":`${uni}`,"group_id":`${group_id}`,"major":`${major}`,"start":currentTableIndex}
                 $.ajax({
                 type:"GET",
-                url:`api/suggest`,
-                data:{"sbd":`${currentSbd}`,"start":`${currentTableIndex}`,"count":"20"},
+                url:`api/${isSuggest?'suggest':'major'}`,
+                data:isSuggest?loadMoreSuggestQuery:loadByFilterQuery,
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
                 success: (result) => {
                     if(result.length <= 0 ){
-                        $('#showMoreBtn').hide()
+                        $(`${isSuggest?'#loadMoreSuggest':'#loadMoreSearch'}`).hide()
                     }
                     console.log(result);
                     pushDataToSuggest(result,currentTableIndex)
 
                 },})
         }
+        function getUniversities() {
+            $.ajax({
+                type:"GET",
+                url:'api/universities',
+                data:{},
+                contentType: "application/json; charset=utf-8",
+                dataType:'json',
+                success:function(result){
+                    console.log(result)
+                    const universities = result.map((data)=>{
+                        return {value:String(data.uni_code), text:`${data.uni_code} - ${data.uni_name}`, name:`${data.uni_code} - ${data.uni_name}`} 
+                    })
+                    // universities.unshift({value:'all', text:'Tất cả', name:'Tất cả'})
+
+                    $('.ui.dropdown')
+                    .dropdown('setup menu',{values:universities})
+                }
+            })
+        }
+        getUniversities()
         // let allCities = localStorage.getItem("allCities");
         // allCities = JSON.parse(allCities);
         // allCities.forEach((element) => {
@@ -618,8 +659,18 @@
         //         `<option id="${element.id}city" value="${element.place_id}">${element.place_name}</option>`;
         //     $("#sllocation").append(child);
         // });
-        $('.ui.dropdown')
-        .dropdown()
+      
         
     </script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+    {{-- <script src="https://code.jquery.com/jquery-3.1.1.min.js" crossorigin="anonymous"></script> --}}
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+    <script>
+        $('.ui.dropdown')
+            .dropdown({
+                clearable: true,
+                // placeholder: 'Chọn thành phố'
+            })
+    </script>
+
 @endsection
