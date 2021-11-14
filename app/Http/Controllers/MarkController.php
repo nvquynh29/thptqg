@@ -6,8 +6,9 @@ use App\Models\Group;
 use App\Models\Mark;
 use App\Models\Place;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+
 class MarkController extends Controller
 {
     private function getDeltaBySubject($subject)
@@ -150,8 +151,7 @@ class MarkController extends Controller
         if (isset($placeId) && isset($subject)) {
             $markArray = [];
             $countArray = [];
-            for ($mark = 0; $mark <= 10; $mark += $delta) 
-            {
+            for ($mark = 0; $mark <= 10; $mark += $delta) {
                 $markArray[] = round($mark, 2);
                 $countArray[] = Mark::where($subject, $mark)->count();
             }
@@ -270,8 +270,7 @@ class MarkController extends Controller
         $subjects = $this->getSubjectsByGroup($group);
         $marks = Mark::select($subjects)->where('sbd', $sbd)->first();
         $point = 0;
-        for ($i = 0; $i < 3; $i++)
-        {
+        for ($i = 0; $i < 3; $i++) {
             if (!isset($marks->{$subjects[$i]})) {
                 return null;
             }
@@ -290,14 +289,13 @@ class MarkController extends Controller
         $count = $request->has('count') ? $request->input('count') : 20;
         if (isset($group_id) || isset($major) || isset($uni)) {
             $filter = DB::table('major_group')
-            ->select('majors.major_code', 'majors.major_name', 'universities.uni_name', 'groups.name as group' ,'standard_point')
-            ->join('groups', 'groups.id', '=', 'major_group.group_id')
-            ->join('majors', 'majors.id', '=', 'major_group.major_id')
-            ->join('universities', 'majors.uni_code', '=', 'universities.uni_code')
-            ->where('universities.uni_code', '=', $uni)
-            ->where('majors.major_code', '=', $major);
-            if (isset($group_id) && $group_id != 'all')
-            {
+                ->select('majors.major_code', 'majors.major_name', 'universities.uni_name', 'groups.name as group', 'standard_point')
+                ->join('groups', 'groups.id', '=', 'major_group.group_id')
+                ->join('majors', 'majors.id', '=', 'major_group.major_id')
+                ->join('universities', 'majors.uni_code', '=', 'universities.uni_code')
+                ->where('universities.uni_code', '=', $uni)
+                ->where('majors.major_code', '=', $major);
+            if (isset($group_id) && $group_id != 'all') {
                 $filter->where('major_group.group_id', '=', $group_id);
             }
             $data = $filter->orWhere('universities.uni_name', 'like', "%$uni%")
@@ -305,13 +303,17 @@ class MarkController extends Controller
                 ->offset($start)
                 ->take($count)
                 ->get();
-                foreach ($data as $value)
-                {
-                    $point = $this->getPoint($sbd, $value->group);
-                    $value->delta = round($point - $value->standard_point, 2);
-                    $value->point = $point;
-                }
-            return $data;
+            foreach ($data as $value) {
+                $point = $this->getPoint($sbd, $value->group);
+                $value->delta = round($point - $value->standard_point, 2);
+                $value->point = $point;
+            }
+            $remove = $data->filter(function ($value, $key) {
+                return $value->point != null;
+            });
+            $remove->all();
+            return $remove;
+
         }
         return response('All input is require', 400);
     }

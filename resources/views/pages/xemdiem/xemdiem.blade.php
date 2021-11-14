@@ -1,6 +1,9 @@
 @extends('layouts.main')
 @section('body')
     <style>
+        a{
+            text-decoration: none !important;
+        }
         a:hover {
             color: #b75c00;
         }
@@ -263,7 +266,6 @@
             display: flex;
             align-items: center;
         }
-
     </style>
 
     <div>
@@ -298,7 +300,7 @@
                 </div>
             </div>
             <div id="toastId" class="hidden">
-                <div class="toast" data-delay="10000"
+                <div class="toast" 
                     style="
                                                                                                                                         position: fixed;
                                                                                                                                         top: 100px;
@@ -308,7 +310,8 @@
                                                                                                                                         padding: 10px;
                                                                                                                                         color: white;
                                                                                                                                         width: 260px;
-                                                                                                                                    ">
+                                                                                                    
+                                   z-index:50;                                                                  ">
                     <div class="toast-header">
                         <strong class="mr-auto">Lỗi đã sảy ra</strong>
                         {{-- <small>11 mins ago</small> --}}
@@ -317,7 +320,7 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <div class="toast-body">Số báo danh không tồn tại!</div>
+                    <div class="toast-body" id="errorMes"></div>
                 </div>
             </div>
         </div>
@@ -334,7 +337,7 @@
                             Cụm thi: 48 - Sở GDĐT Đồng Nai
                         </p>
                     </div>
-                    <div class="o-detail-thisinh__diemthi">
+                    <div class="o-detail-thisinh__diemthi table-responsive">
                         <table class="e-table table-striped" id="bang_diem_thi" cellspacing="0">
                             <thead>
                                 <tr>
@@ -361,27 +364,31 @@
                         <form class="e-form" action="">
                             <div class="form-group">
                                 <span class="label">Tìm trường</span>
-                                <input type="text" class="form-control" id="input_college" placeholder="Tên trường"
+                                <input type="text" class="form-control" id="input_college" placeholder="Tên trường, mã trường"
+                                    autocomplete="off" />
+                                <div class="autocomplete-box" id="autocomplete-box"></div>
+                            </div>
+                            <div class="form-group">
+                                <span class="label">Tìm ngành</span>
+                                <input type="text" class="form-control" id="ten_nganh" placeholder="Tên ngành, mã ngành"
                                     autocomplete="off" />
                                 <div class="autocomplete-box" id="autocomplete-box"></div>
                             </div>
                             <div class="form-group">
                                 <span class="label">Khối</span>
                                 <select name="slblock" id="slblock">
-                                    <option value="All">Tất cả</option>
-                                    <option value="A">A</option>
-                                    <option value="B">B</option>
-                                    <option value="C">C</option>
-                                    <option value="D">D</option>
-                                    <option value="H">A1</option>
+                                    <option value="all">Tất cả</option>
+                                    <option value="1">A</option>
+                                    <option value="2">A1</option>
+                                    <option value="3">B</option>
+                                    <option value="4">C</option>
+                                    <option value="5">D</option>
                                 </select>
                             </div>
+                           
+
                             <div class="form-group">
-                                <span class="label">Tỉnh thành</span>
-                                <select name="sllocation" id="sllocation"></select>
-                            </div>
-                            <div class="form-group">
-                                <button type="button" class="btn btnFilter">
+                                <button type="button" id="showMoreBtn" style="margin: 0 10px" class="btn btnFilter" onclick="filter()">
                                     Tìm kiếm
                                 </button>
                             </div>
@@ -391,8 +398,8 @@
                 <div class="container">
                     <div class="table-responsive" style="padding-top: 20px">
                         <table class="table table-striped">
-                            <caption>
-                                Jteam
+                            <caption style="text-align: center;outline:none">
+                                <button class="btn primary" style="margin: 0 auto;box-shadow: none" onclick="loadMore()">Xem thêm</button>
                             </caption>
                             <thead class="thead-dark">
                                 <tr>
@@ -410,10 +417,14 @@
 
                             </tbody>
                         </table>
+                        
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+    <div class="loading">
+        
     </div>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"
         integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous">
@@ -425,7 +436,9 @@
     <script>
         var thongTinTraCuu;
 
-        function showToast() {
+        function showToast(messages,duration) {
+            $("#toastId .toast").attr(`data-delay="${duration}"`)
+            $('#errorMes').text(messages)
             $("#toastId")[0].classList.remove("hidden");
             $(".toast").toast("show");
         }
@@ -442,7 +455,9 @@
                     showData(result.data, result.marks, result.suggest)
                     searchOk()
                 },
-                error: showToast,
+                error: function error() {
+                    showToast("Số báo danh không tồn tại!",1000)
+                },
             });
             // window.location.href = '/tracuu';
             console.log($("#keyword")[0].value);
@@ -455,7 +470,7 @@
 
         function search() {
             const sbd = $("#keyword")[0].value;
-            searchOk();
+            // searchOk();
             console.log(sbd)
             if (sbd) {
                 getMark(sbd);
@@ -464,9 +479,14 @@
         }
 
         function showData(thong_tin, diem_thi, suggest) {
+            /* clear old data */
+            $('#bang_diem_thi tbody').empty()
+            $('#bang_goi_y').empty()
+            $('#so_bao_danh').empty()
+            $('#cum_thi').empty()
             // diemthi la cac object ten va diem
             // thong tin chua sbd , cum thi
-            const diem_thi_body = $('#bang_diem_thi')
+            const diem_thi_body = $('#bang_diem_thi tbody')
             const goi_y_body = $('#bang_goi_y')
             const sbd = $('#so_bao_danh')
             const cum_thi = $('#cum_thi')
@@ -491,8 +511,8 @@
 
             diem_thi.forEach(diem => {
                 row_bang_diem_thi += `
-                                    <tr>
-                                        <td>${diem.name}</td>
+                                    <tr style="border:1px solid #888888">
+                                        <td style="border-right:1px solid #888888">${diem.name}</td>
                                         <td>${diem.mark}</td>
                                     </tr>
                                     `
@@ -503,12 +523,82 @@
             sbd.text(thong_tin.sbd)
         }
 
-        let allCities = localStorage.getItem("allCities");
-        allCities = JSON.parse(allCities);
-        allCities.forEach((element) => {
-            const child =
-                `<option id="${element.id}city" value="${element.place_id}">${element.place_name}</option>`;
-            $("#sllocation").append(child);
-        });
+
+        
+        function filter(){
+            const uni = $('#input_college')[0].value
+            const major = $('#ten_nganh')[0].value
+            const group_id = $('#slblock')[0].value
+            const currentSbd = $('#so_bao_danh')[0].textContent
+            console.log({uni,major,group_id,currentSbd})
+            $.ajax({
+                type:"GET",
+                url:`api/major`,
+                data:{"sbd":`${currentSbd}`,"uni":`${uni}`,"group_id":`${group_id}`,"major":`${major}`},
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: (result) => {
+                    if(result.length <= 0){
+                      return showToast('Không có dữ liệu phù hợp với lựa chọn của bạn!',2000)
+                    }
+                    emptySuggest()
+                    pushDataToSuggest(result,0);
+                },
+
+            })
+            return {
+                thong_tin:[],
+                diem_thi:[],
+                suggest:[]
+            }
+        }
+        function emptySuggest() {
+            $('#bang_goi_y').empty()
+
+        }
+        function pushDataToSuggest(data,currentTableIndex) {
+                    let row_bang_goi_y = ''
+                    const goi_y_body = $('#bang_goi_y')
+                    data.forEach((element, index) => {
+                        const text = element.delta >= 0 ? `<span class="plus">+${element.delta}</span>` :
+                            `<span class="minus">${element.delta}</span>`
+                        row_bang_goi_y += `<tr>
+                                            <th scope="row">${currentTableIndex + index + 1}</th>
+                                            <td>${element.major_name}</td>
+                                            <td>${element.major_code}</td>
+                                            <td>${element.group}</td>
+                                            <td>${element.uni_name}</td>
+                                            <td>${element.standard_point}</td>
+                                            <td>${element.point}<br/>( ${text} )</td>
+                                        </tr>`
+                    });
+                    goi_y_body.append(row_bang_goi_y)
+        }
+        function loadMore(){
+            const currentTableIndex = $('#bang_goi_y tr').last()[0].rowIndex
+            const currentSbd = $('#so_bao_danh')[0].textContent
+                $.ajax({
+                type:"GET",
+                url:`api/suggest`,
+                data:{"sbd":`${currentSbd}`,"start":`${currentTableIndex}`,"count":"20"},
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: (result) => {
+                    if(result.length <= 0 ){
+                        $('#showMoreBtn').hide()
+                    }
+                    console.log(result);
+                    pushDataToSuggest(result,currentTableIndex)
+
+                },})
+        }
+        // let allCities = localStorage.getItem("allCities");
+        // allCities = JSON.parse(allCities);
+        // allCities.forEach((element) => {
+        //     const child =
+        //         `<option id="${element.id}city" value="${element.place_id}">${element.place_name}</option>`;
+        //     $("#sllocation").append(child);
+        // });
+        
     </script>
 @endsection
