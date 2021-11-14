@@ -61,20 +61,22 @@ class MarkController extends Controller
     public function show($sbd)
     {
         $record = Mark::where('sbd', $sbd)->first();
-        $place = Place::where('place_id', $record->place_id)->first();
-        $marks = [];
+        if (isset($record)) {
+            $place = Place::where('place_id', $record->place_id)->first();
+            $marks = [];
 
-        if ($record) {
-            $data = $record->toArray();
-            foreach ($data as $key => $value) {
-                $name = $this->getSubjectName($key);
-                if (isset($name) && isset($value)) {
-                    $marks[] = ['name' => $name, 'mark' => $value];
+            if ($record) {
+                $data = $record->toArray();
+                foreach ($data as $key => $value) {
+                    $name = $this->getSubjectName($key);
+                    if (isset($name) && isset($value)) {
+                        $marks[] = ['name' => $name, 'mark' => $value];
+                    }
                 }
+                $record->place = $place->place_name;
+                $suggest = $this->suggest($record, 0, 20);
+                return response()->json(['data' => $record, 'suggest' => $suggest, 'marks' => $marks]);
             }
-            $record->place = $place->place_name;
-            $suggest = $this->suggest($record, 0, 20);
-            return response()->json(['data' => $record, 'suggest' => $suggest, 'marks' => $marks]);
         }
         return response('Not found', 404);
     }
@@ -140,7 +142,10 @@ class MarkController extends Controller
             $count = $request->input('count');
         }
         $record = Mark::where('sbd', $request->sbd)->first();
-        return $this->suggest($record, $start, $count);
+        if (isset($record)) {
+            return $this->suggest($record, $start, $count);
+        }
+        return response('Not found', 404);
     }
 
     public function phase(Request $request)
@@ -227,20 +232,6 @@ class MarkController extends Controller
             }
         }
         return response('All input is require', 400);
-
-        // $subject = $request->input('subject');
-        // $desc = $request->input('desc');
-        // $marks = DB::table('marks')
-        //     ->select('marks.place_id', 'places.place_name', DB::raw("round(AVG($subject),5) as mark"))
-        //     ->groupBy('marks.place_id', 'places.place_name')
-        //     ->join('places', 'places.place_id', '=', 'marks.place_id')
-        //     ->orderBy('mark', $desc)
-        //     ->take(10)
-        //     ->get();
-        // if ($subject !== 'all') {
-        //     $name = $this->getSubjectName($subject);
-        // }
-        // return response(['name' => $name, 'data' => $marks]);
     }
 
     public function topTenAll(Request $request)
@@ -269,14 +260,17 @@ class MarkController extends Controller
     {
         $subjects = $this->getSubjectsByGroup($group);
         $marks = Mark::select($subjects)->where('sbd', $sbd)->first();
-        $point = 0;
-        for ($i = 0; $i < 3; $i++) {
-            if (!isset($marks->{$subjects[$i]})) {
-                return null;
+        if (isset($marks)) {
+            $point = 0;
+            for ($i = 0; $i < 3; $i++) {
+                if (!isset($marks->{$subjects[$i]})) {
+                    return null;
+                }
+                $point += $marks->{$subjects[$i]};
             }
-            $point += $marks->{$subjects[$i]};
+            return round($point, 2);
         }
-        return round($point, 2);
+        return response('Not found', 404);
     }
 
     public function searchMajor(Request $request)
@@ -313,7 +307,6 @@ class MarkController extends Controller
             });
             $remove->all();
             return $remove;
-
         }
         return response('All input is require', 400);
     }
