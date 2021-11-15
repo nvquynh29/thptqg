@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\MarkController;
 use App\Http\Controllers\PlaceController;
+use App\Http\Controllers\UniversityController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -23,3 +24,5 @@ Route::get('/phase', [MarkController::class, 'phase']);
 Route::get('/top-ten', [MarkController::class, 'topTen']);
 Route::get('/top-ten-all', [MarkController::class, 'topTenAll']);
 Route::get('/places', [PlaceController::class, 'index']);
+Route::get('/major', [MarkController::class, 'searchMajor']);
+Route::get('/universities', [UniversityController::class, 'index']);

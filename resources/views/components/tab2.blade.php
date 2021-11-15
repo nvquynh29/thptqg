@@ -3,73 +3,79 @@
     <div style="position: relative;top:-20px">
         <div class=" cities__filter">
             <div class="form-group" >
-                <span class="label">Xem theo môn:</span>
+                <span class="label">Chọn khối:  </span>
                     <div class="value">
-                        <a class="cities__fliter_item-tab2 active" name="all" href="javascript:;">Toàn quốc</a>
-                        <a class="cities__fliter_item-tab2" name="Hà Nội" href="javascript:;" >Hà Nội</a>
-                        <a class="cities__fliter_item-tab2" name="TP.Hồ Chí Minh" href="javascript:;" >TP.Hồ Chí Minh</a>
+                         <a class="group__fliter_item-tab2 active" name="all" href="javascript:;">Tất cả</a>
+                        <a class="group__fliter_item-tab2" name="A" href="javascript:;">A</a>
+                        <a class="group__fliter_item-tab2" name="B" href="javascript:;" >B</a>
+                        <a class="group__fliter_item-tab2" name="C" href="javascript:;" >C</a>
+                        <a class="group__fliter_item-tab2" name="D" href="javascript:;" >D</a>                        
+                        <a class="group__fliter_item-tab2" name="A1" href="javascript:;" >A1</a>                             
                 </div>					
             </div>
         </div>
         {{--cities selector --}}
-    <div class="ui dropdown dropdown-tab2 search selection " style="padding: 3px 25px;">
-            <input type="hidden" name="cities" style="height: 100%" id="selected_city">
-            <i class="dropdown icon" style="position: absolute; "></i>
-            <div class="default text">Toàn quốc</div>
-            <div class="menu" >
-            
-            </div>
-        </div>
+
+    
     </div>
+    <div id="charts-all-tab2" style="height: fit-content; min-width: 310px;max-width:900px;margin: 0 auto; width:100%;">
+     <div id="charts-tab2" style="height: fit-content; min-width: 310px;max-width:900px;margin: 0 auto; width:100%;">
+
     <script>
-        $.ajax({
+      const defaultGroups = ['A','B','C','D','A1']    
+      defaultGroups.forEach(element => {
+            $.ajax({
                 type: "GET",
-                url: `api/places`,
-                data: '',
+                url: `api/phase-group`,
+                data: {"group":`${element}`},
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
                 success: (result)=>{
-                    const cities = result.map((data)=>{
-                        return {value:String(data.place_id).padStart(2, '0'), text:data.name, name:data.place_name} 
-                    })
-                    $('.ui .dropdown-tab2')
-                    .dropdown('setup menu',{values:cities})
+                
+                const chartStack  = $('#charts-all-tab2')
+                const containerCreator = `
+                    <div id="${'tab2-container-chart_of_all_'+ element}" class="tab2-chart ${element}" style="width: 100%;height: 100%;" ></div>
+                `   
+                chartStack.append(containerCreator );
+                renderChart(Object.keys(result),Object.values(result),
+                            `tab2-container-chart_of_all_${element}`,
+                            `Khối ${element}`)
                 }
-        });   
-        $('.cities__fliter_item-tab2')?.each((index,item)=>{
+            });   
+      }); 
+        $('.group__fliter_item-tab2')?.each((index,item)=>{
             item.onclick =function (){
-                console.log([this.name])
-                $('.cities__fliter_item-tab2.active')[0]?.classList.remove('active')
+                if(this.name === 'all'){
+                    $('.group__fliter_item-tab2.active')[0]?.classList.remove('active')
+                    this.classList.add("active")
+                    
+                    return $('.tab2-chart').not('a').show()
+                   
+                    
+                }
+                $('.group__fliter_item-tab2.active')[0]?.classList.remove('active')
                 this.classList.add("active")
-                $('.ui .dropdown-tab2')
-                .dropdown('set text',this.name=='all'?"Toàn quốc":this.name)
+                $(`.tab2-chart`).not(`.tab2-chart.${this.name}`).hide()
+                $(`.tab2-chart.${this.name}`).show()
+                // $.ajax({
+                //     type: "GET",
+                //     url: `api/phase-group`,
+                //     data: {"group":`${this.name}`},
+                //     contentType: "application/json; charset=utf-8",
+                //     dataType: "json",
+                //     success: (result)=>{
+                    
+                //     const chartStack  = $('#charts-tab2')
+                //     const containerCreator = `
+                //         <div id="${'tab2-container-chart_of_'+ this.name}" class="tab1-chart ${this.name}" style="width: 100%;height: 100%;" ></div>
+                //     `   
+                //     chartStack.append(containerCreator );
+                //     renderChart(Object.keys(result),Object.values(result),
+                //                 `tab2-container-chart_of_${this.name}`,
+                //                 `Khối ${this.name}`)
+                //     }
+                // }); 
             }
-        })
-            /* select cities js */
-        const initalcitiesSelectorTab2 = $('.ui .dropdown-tab2')
-            .dropdown({
-                clearable: true,
-                placeholder: 'Chọn thành phố'
-            })
-     
-        const onCityChangeTab2 = $(".ui .dropdown-tab2")
-        .dropdown({
-            onChange:function(place_id,place_name){
-                console.log({place_id,place_name})
-                $('input').blur();
-                if(place_id == '01'){
-                    $('.cities__fliter_item-tab2.active')[0]?.classList.remove('active')
-                    $('.cities__fliter_item-tab2')[1]?.classList.add('active')
-                    return ;
-                }
-                if(place_id == '02'){
-                    $('.cities__fliter_item-tab2.active')[0]?.classList.remove('active')
-                    $('.cities__fliter_item-tab2')[2]?.classList.add('active')
-                    return ;
-
-                }
-                $('.cities__fliter_item-tab2.active')[0]?.classList.remove('active')
-            }})
-               
+        })       
     </script>
 </div>

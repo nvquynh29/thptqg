@@ -5,11 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"  crossorigin="anonymous">
     {{-- jquery cdn --}}
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"
         integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     {{-- semantic ui cdn --}}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js" integrity="sha512-dqw6X88iGgZlTsONxZK9ePmJEFrmHwpuMrsUChjAw1mRUhUITE5QU9pkcSox+ynfLhL15Sv2al5A0LVyDCmtUw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+
     {{-- <link rel="stylesheet" href=""> --}}
     <title>Hệ thống tra cứu điểm thi THPTQG</title>
     <link rel="shortcut icon" href="favicon.png" type="image/png">
@@ -24,7 +27,9 @@
     body{
         font-family: Arial, Helvetica, sans-serif;
     }
-
+    a:hover{
+        color: #B75C00 !important;
+    }
     .highcharts-legend {
         display: none;
     }
@@ -302,10 +307,10 @@
             <nav class="navigation__list">
                 <ul class="navigation__items">
                     <li class="navigation__item active">
-                        <a href="/">ĐIỂM THI TỐT NGHIỆP THPT</a>
+                        <a href="/" style="text-decoration: none; color: #B75C00">TRANG CHỦ</a>
                     </li>
                     <li class="navigation__item">
-                        <a href="/tra-cuu-dai-hoc">tra cứu đại học</a>
+                        <a href="/tracuu"  style="text-decoration: none; color: #B75C00">TRA CỨU ĐIỂM THI THPTQG</a>
                     </li>
 
                 </ul>
