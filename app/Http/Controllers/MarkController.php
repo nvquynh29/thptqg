@@ -46,6 +46,9 @@ class MarkController extends Controller
         // $result[i] => count(x), i - 1 < x <= i
         $result = array_fill(0, 31, 0);
         $group = $request->input('group');
+        if (Cache::has("phase-group-$group")) {
+            return json_decode(Cache::get("phase-group-$group"));
+        }
         if (isset($group)) {
             $subjects = $this->getSubjectsByGroup($group);
             $khtn = $group == 'A' || $group == 'A1' || $group == 'B';
@@ -54,6 +57,7 @@ class MarkController extends Controller
                 $sum = $value->{$subjects[0]}+$value->{$subjects[1]}+$value->{$subjects[2]};
                 $result[round($sum)]++;
             }
+            Cache::forever("phase-group-$group", $result);
             return response($result);
         }
         return response('group is required', 400);
@@ -207,6 +211,9 @@ class MarkController extends Controller
 
     public function phaseAllSubject(Request $request)
     {
+        if (Cache::has("phase-all-subject-$request->place_id")) {
+            return json_decode(Cache::get("phase-all-subject-$request->place_id"));
+        }
         $subjects = ['toan', 'van', 'ngoai_ngu', 'ly', 'hoa', 'sinh', 'su', 'dia', 'gdcd'];
         $length = count($subjects);
         $data = [];
@@ -214,6 +221,7 @@ class MarkController extends Controller
             $request->merge(['subject' => $subjects[$i]]);
             $data[] = $this->phase($request)->original;
         }
+        Cache::forever("phase-all-subject-$request->place_id", json_encode($data));
         return $data;
     }
 
@@ -295,13 +303,18 @@ class MarkController extends Controller
                 $filter->where('major_group.group_id', '=', $group_id);
             }
             if ($major != '') {
-                $filter->where(function ($query) use ($major, $uni) {
-                    $query->where('majors.major_code', '=', $major)
+                if (isset($uni)) {
+                    $filter->where(function ($query) use ($major, $uni) {
+                        $query->where('majors.major_code', '=', $major)
+                            ->orWhere('majors.major_name', 'LIKE', "%$major%");
+                        if ($uni != '') {
+                            $query->orWhere('universities.uni_name', 'LIKE', "%$uni%");
+                        }
+                    });
+                } else {
+                    $filter->where('majors.major_code', '=', $major)
                         ->orWhere('majors.major_name', 'LIKE', "%$major%");
-                    if ($uni != '') {
-                        $query->orWhere('universities.uni_name', 'LIKE', "%$uni%");
-                    }
-                });
+                }
             }
             $data = $filter
                 ->offset($start)
