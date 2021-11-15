@@ -126,6 +126,7 @@
         dataType: "json",
         success: (result)=>{
           for (const key in result) {
+              
               if (Object.hasOwnProperty.call(result, key)) {
                   const element = result[key];
                     const chartStack  = $('#charts-tab0')

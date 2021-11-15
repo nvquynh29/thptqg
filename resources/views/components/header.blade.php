@@ -22,7 +22,7 @@
     <div class="section-head width_common" style="margin-bottom:20px">
         <div class="container">
             <h2 class="section-head__title">
-              <a href=""><span>Dữ liệu điểm thi</span>
+              <a href=""><span>Tra cứu điểm thi</span>
                 <br/>
                 <strong>Tốt nghiệp THPT 2021</strong></a>
             </h2>
