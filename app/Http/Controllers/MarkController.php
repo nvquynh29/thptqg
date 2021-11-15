@@ -57,7 +57,7 @@ class MarkController extends Controller
                 $sum = $value->{$subjects[0]}+$value->{$subjects[1]}+$value->{$subjects[2]};
                 $result[round($sum)]++;
             }
-            Cache::forever("phase-group-$group", $result);
+            Cache::forever("phase-group-$group", json_encode($result));
             return response($result);
         }
         return response('group is required', 400);
