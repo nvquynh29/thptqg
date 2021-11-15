@@ -256,7 +256,7 @@ class MarkController extends Controller
                 for ($i = 0; $i < $length; $i++) {
                     $request->merge(['subject' => $subjects[$i]]);
                     $name = $this->getSubjectName($subjects[$i]);
-                    $data[$subjects[$i]] = ['data' => $this->topTen($request), 'name' => $name];
+                    $data[$subjects[$i]] = ['data' => $this->topTen($request)->original, 'name' => $name];
                 }
                 Cache::forever("top-ten-all-$sort", json_encode($data));
                 return response()->json($data);
@@ -296,25 +296,20 @@ class MarkController extends Controller
                 ->join('groups', 'groups.id', '=', 'major_group.group_id')
                 ->join('majors', 'majors.id', '=', 'major_group.major_id')
                 ->join('universities', 'majors.uni_code', '=', 'universities.uni_code');
-            if ($uni != 'all') {
-                $filter->where('universities.uni_code', '=', $uni);
-            }
             if ($group_id != 'all') {
                 $filter->where('major_group.group_id', '=', $group_id);
             }
+            if ($uni != '') {
+                $filter->where('universities.uni_code', '=', $uni);
+            }
             if ($major != '') {
-                if (isset($uni)) {
-                    $filter->where(function ($query) use ($major, $uni) {
-                        $query->where('majors.major_code', '=', $major)
-                            ->orWhere('majors.major_name', 'LIKE', "%$major%");
-                        if ($uni != '') {
-                            $query->orWhere('universities.uni_name', 'LIKE', "%$uni%");
-                        }
-                    });
-                } else {
-                    $filter->where('majors.major_code', '=', $major)
+                $filter->where(function ($query) use ($major, $uni) {
+                    $query->where('majors.major_code', '=', $major)
                         ->orWhere('majors.major_name', 'LIKE', "%$major%");
-                }
+                    if ($uni != '') {
+                        $query->orWhere('universities.uni_name', 'LIKE', "%$uni%");
+                    }
+                });
             }
             $data = $filter
                 ->offset($start)
