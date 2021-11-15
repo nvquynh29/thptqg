@@ -231,7 +231,7 @@ class MarkController extends Controller
         $sort = $request->input('desc');
         if (isset($subject) && isset($sort)) {
             if (Cache::has("top-ten-$subject-$sort")) {
-                return Cache::get(json_decode("top-ten-$subject-$sort"));
+                return json_decode(Cache::get("top-ten-$subject-$sort"));
             } else {
                 $desc = $sort == 'desc' ? 1 : 0;
                 $marks = DB::select("call thptqg.top_ten('$subject', $desc);");
@@ -248,7 +248,7 @@ class MarkController extends Controller
         $sort = $request->input('desc');
         if (isset($sort)) {
             if (Cache::has("top-ten-all-$sort")) {
-                return Cache::get("top-ten-all-$sort");
+                return json_decode(Cache::get("top-ten-all-$sort"));
             } else {
                 $subjects = ['toan', 'van', 'ngoai_ngu', 'ly', 'hoa', 'sinh', 'su', 'dia', 'gdcd'];
                 $length = count($subjects);
@@ -256,9 +256,9 @@ class MarkController extends Controller
                 for ($i = 0; $i < $length; $i++) {
                     $request->merge(['subject' => $subjects[$i]]);
                     $name = $this->getSubjectName($subjects[$i]);
-                    $data[$subjects[$i]] = ['data' => $this->topTen($request)->original, 'name' => $name];
+                    $data[$subjects[$i]] = ['data' => $this->topTen($request), 'name' => $name];
                 }
-                Cache::forever("top-ten-all-$sort", $data);
+                Cache::forever("top-ten-all-$sort", json_encode($data));
                 return response()->json($data);
             }
         }

@@ -307,10 +307,10 @@
             <nav class="navigation__list">
                 <ul class="navigation__items">
                     <li class="navigation__item active">
-                        <a href="/">ĐIỂM THI TỐT NGHIỆP THPT</a>
+                        <a href="/" style="text-decoration: none; color: #B75C00">TRANG CHỦ</a>
                     </li>
                     <li class="navigation__item">
-                        <a href="/tracuu">TRA CỨU ĐIỂM THI THPTQG</a>
+                        <a href="/tracuu"  style="text-decoration: none; color: #B75C00">TRA CỨU ĐIỂM THI THPTQG</a>
                     </li>
 
                 </ul>
